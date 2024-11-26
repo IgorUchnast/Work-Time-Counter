@@ -1,6 +1,8 @@
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from api_key import API_KEY, TOKEN, BASE_URL, BOARD_ID, WORK_SPACE
+import requests
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///company.db'
@@ -16,7 +18,6 @@ class Employee(db.Model):
     last_name = db.Column(db.String, nullable=False)
     email = db.Column(db.String, unique=True, nullable=False)
     position = db.Column(db.String, nullable=False)
-    
     
     # projects = db.relationship('Project', backref='leader', lazy=True)
 
@@ -50,15 +51,6 @@ class Project(db.Model):
     tasks = db.relationship('Task', backref='project', lazy=True)
     meetings = db.relationship('Meeting', backref='project', lazy=True)
 
-
-# class ProjectMember(db.Model):
-#     __tablename__ = 'project_member'
-#     project_id = db.Column(db.Integer, db.ForeignKey('project.project_id'), primary_key=True)
-#     employee_id = db.Column(db.Integer, db.ForeignKey('employee.employee_id'), primary_key=True)
-#     role = db.Column(db.String, nullable=False)
-#     hours_worked = db.Column(db.Numeric, nullable=True)
-
-#     leader = db.relationship('Project', backref = 'project_member', lazy=True)
 
 
 class Task(db.Model):
@@ -127,6 +119,7 @@ def add_new_employee():
                  "email": employee.email, "position": employee.position} for employee in employees]), 200
 
 
+
 @app.route('/employee_projects/<int:employee_id>', methods=['GET'])
 def get_employee_projects(employee_id):
     # Pobranie pracownika z bazy danych
@@ -141,13 +134,80 @@ def get_employee_projects(employee_id):
             'title': project.title,
             'description': project.description,
             'start_date': project.start_date,
-            'end_date': project.end_date
+            'end_date': project.end_date,
+            'leader_id': project.leader_id,
         })
     
     # Zwrócenie wyników w formacie JSON
     return jsonify(projects)
 
 
+def get_trello_data(board_id, data_type):
+
+    url = f"{BASE_URL}/boards/{board_id}/{data_type}"
+    params = {
+        'key': API_KEY,
+        'token': TOKEN
+    }
+
+    response = requests.get(url, params=params)
+    
+    # Sprawdzenie, czy zapytanie się powiodło
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Błąd: {response.status_code}")
+        return None
+
+
+
+
+
+def add_trello_employee(board_id):
+    url = "http://127.0.0.1:5000/employee" 
+    board_members = get_trello_data(board_id, data_type='members') 
+    
+    if board_members:
+        for member in board_members:
+            email = member.get('email')  # Pobierz email, jeśli jest dostępny
+            if not email:  # Jeśli brak, ustaw tymczasowy email
+                email = f"{member['fullName'].split()[0]}_{''.join(member['fullName'].split()[1:])}_{member['id']}@company.com"
+                
+            employee = Employee.query.filter_by(email=email).first()
+            if not employee:
+                employee = Employee(
+                    first_name=member['fullName'].split()[0],
+                    last_name=" ".join(member['fullName'].split()[1:]),
+                    email=email,
+                    position='Software Developer'
+                )
+                db.session.add(employee)
+                db.session.commit()
+
+
+def get_boards_in_workspace(workspace_id, employee_id): 
+    url = f"{BASE_URL}/organizations/{workspace_id}/boards"
+    params = {
+        'key': API_KEY,
+        'token': TOKEN
+    }
+
+    response = requests.get(url, params=params)
+    
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Błąd: {response.status_code}")
+        return None
+
+# def get_
+
+def get_trello_project():
+    boards = get_trello_data(WORK_SPACE)
+    for board in range(len(boards)):
+        # url = f"http://127.0.0.1:5000/employee_projects/{board + 1}"
+
+        pass
 # backref
 # backref tworzy automatyczny, dwukierunkowy dostęp między powiązanymi obiektami, 
 # dodając atrybut odwrotny (ang. back-reference) w obiekcie po drugiej stronie relacji. 
@@ -158,68 +218,10 @@ def get_employee_projects(employee_id):
 # Dopiero gdy faktycznie potrzebujemy dostępu do powiązanych danych, SQLAlchemy pobiera je z bazy.
 
 # INICJALIZACJA BAZY DANYCH
-
-# @app.before_first_request
-# def create_tables():
-#     db.create_all()
-# Inicjalizacja bazy danych
 with app.app_context():
-    # db.drop_all()
+    db.drop_all()
     db.create_all()
-    # Dodaj nowego pracownika
-    # new_employee = Employee(
-    #     first_name='Jan',
-    #     last_name='Kowalski',
-    #     email='jan.kowalski@example.com',
-    #     position='Developer'
-    # )
-    
-    # db.session.add(new_employee)
-    # db.session.commit()
-
-    # # Dodaj nowy projekt (jeśli nie istnieje)
-    # new_project = Project(
-    #     title='Projekt X',
-    #     description='Impreza u Bartka',
-    #     start_date=datetime.now().date()
-    # )
-    
-    # db.session.add(new_project)
-    # db.session.commit()
-
-    # # Dodaj nową rolę dla pracownika w projekcie
-    # new_project_member = ProjectMember(
-    #     project_id=new_project.project_id,
-    #     employee_id=new_employee.employee_id,
-    #     role='Organizator Alko',
-    #     hours_worked=0
-    # )
-    
-    # db.session.add(new_project_member)
-    # db.session.commit()
-
-    # # Dodaj nowe zadanie dla pracownika w projekcie
-    # new_task = Task(
-    #     project_id=new_project.project_id,
-    #     title='Zadanie 1',
-    #     description='Zrobienie Imprezy X.',
-    #     start_date=datetime.now().date(),
-    #     end_date=None,  # lub datetime.now().date() + timedelta(days=7) dla daty końcowej
-    #     # employee_id=new_employee.employee_id
-    # )
-
-    # db.session.add(new_task)
-    # db.session.commit()
-
-    # new_task_assignment = TaskAssignment(
-    #     task_id=new_task.task_id,
-    #     employee_id=new_employee.employee_id,
-    #     hours_spent=2
-    # )
-
-    # db.session.add(new_task_assignment)
-    # db.session.commit()
-
+    add_trello_employee(BOARD_ID)
     
 
 if __name__ == '__main__':
