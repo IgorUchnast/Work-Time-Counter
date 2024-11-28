@@ -1,8 +1,10 @@
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from api_key import API_KEY, TOKEN, BASE_URL, BOARD_ID, WORK_SPACE
+from config.api_key import API_KEY, TOKEN, BASE_URL, BOARD_ID, WORK_SPACE
 import requests
+from datetime import date
+import random
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///company.db'
@@ -42,7 +44,7 @@ class Project(db.Model):
     title = db.Column(db.String, nullable=False)
     description = db.Column(db.Text, nullable=True)
     start_date = db.Column(db.Date, nullable=False)
-    end_date = db.Column(db.Date, nullable=True)
+    # end_date = db.Column(db.Date, nullable=True)
     # leader_id = db.Column(db.Integer, db.ForeignKey('employee.employee_id'), nullable=True)
     leader_id = db.Column(db.Integer, db.ForeignKey('project_member.employee_id'), nullable=False)
     
@@ -60,7 +62,7 @@ class Task(db.Model):
     title = db.Column(db.String, nullable=False)
     description = db.Column(db.Text, nullable=True)
     start_date = db.Column(db.Date, nullable=False)
-    end_date = db.Column(db.Date, nullable=True)
+    # end_date = db.Column(db.Date, nullable=True)
     
     assignments = db.relationship('TaskAssignment', backref='task', lazy=True)
 
@@ -141,6 +143,22 @@ def get_employee_projects(employee_id):
     # Zwrócenie wyników w formacie JSON
     return jsonify(projects)
 
+# ************************************************************************************************************
+
+def get_boards_in_workspace(workspace_id): 
+    url = f"{BASE_URL}/organizations/{workspace_id}/boards"
+    params = {
+        'key': API_KEY,
+        'token': TOKEN
+    }
+
+    response = requests.get(url, params=params)
+    
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Błąd: {response.status_code}")
+        return None
 
 def get_trello_data(board_id, data_type):
 
@@ -160,11 +178,48 @@ def get_trello_data(board_id, data_type):
         return None
 
 
+def save_trello_projects():
+    boards = get_boards_in_workspace(WORK_SPACE)
 
+    if boards:
+        for board_id in range(len(boards)):
+            description = boards[board_id].get('description')
+            if not description:
+                description = f"{boards[board_id]['id']}"
+            board = Project.query.filter_by(description=description).first()
+            if not board:
+                board = Project(
+                    title = boards[board_id]['name'],
+                    description = boards[board_id]['id'],
+                    start_date = date.today(),
+                    leader_id = random.choice([1, 2])
+                )
+                db.session.add(board)
+                db.session.commit()
 
+def fetch_trello_lists():
+    boards = get_boards_in_workspace(WORK_SPACE)
+    if boards:
+        for board in boards:
+            board_id = board['id']
+            lists = get_trello_data(board_id=board_id, data_type='lists')
+            if lists:
+                for member in lists:
+                    save_trello_lists(board_id=board_id)
 
-def add_trello_employee(board_id):
-    url = "http://127.0.0.1:5000/employee" 
+def fetch_trello_employee():
+    boards = get_boards_in_workspace(WORK_SPACE)
+    if boards:
+        for board in boards:
+            board_id = board['id']
+            members = get_trello_data(board_id, data_type='members')
+            if members:
+                for member in members:
+                    save_trello_employee(board_id=board_id)
+
+                    
+
+def save_trello_employee(board_id):
     board_members = get_trello_data(board_id, data_type='members') 
     
     if board_members:
@@ -179,35 +234,37 @@ def add_trello_employee(board_id):
                     first_name=member['fullName'].split()[0],
                     last_name=" ".join(member['fullName'].split()[1:]),
                     email=email,
-                    position='Software Developer'
+                    # position='Software Developer'
+                    position= random.choice(["Software Developer", "Mobile-App Developer", "Web-App Developer"])
                 )
                 db.session.add(employee)
                 db.session.commit()
 
-
-def get_boards_in_workspace(workspace_id, employee_id): 
-    url = f"{BASE_URL}/organizations/{workspace_id}/boards"
-    params = {
-        'key': API_KEY,
-        'token': TOKEN
-    }
-
-    response = requests.get(url, params=params)
+def save_trello_lists(board_id):
+    board_lists = get_trello_data(board_id, data_type='lists') 
     
-    if response.status_code == 200:
-        return response.json()
-    else:
-        print(f"Błąd: {response.status_code}")
-        return None
+    if board_lists:
+        for list in board_lists:
+            list_id = list.get('id')
+            if not list_id:  # Jeśli brak, ustaw tymczasowy email
+                list_id = None
+            # if project_id == board_id:
+            project = Project.query.filter_by(description=board_id).first()
+            if project:
+                id = project.project_id
+            task = Task.query.filter_by(description=list_id).first()
+            if not task:
+                task = Task(
+                    project_id= id,
+                    title=list['name'],
+                    description=list['id'],
+                    start_date=date.today(),
+                    # end_date= None
+                    # end_date= date.today() if list.get('closed') else '0000-00-00'
+                )
+                db.session.add(task)
+                db.session.commit()
 
-# def get_
-
-def get_trello_project():
-    boards = get_trello_data(WORK_SPACE)
-    for board in range(len(boards)):
-        # url = f"http://127.0.0.1:5000/employee_projects/{board + 1}"
-
-        pass
 # backref
 # backref tworzy automatyczny, dwukierunkowy dostęp między powiązanymi obiektami, 
 # dodając atrybut odwrotny (ang. back-reference) w obiekcie po drugiej stronie relacji. 
@@ -221,7 +278,13 @@ def get_trello_project():
 with app.app_context():
     db.drop_all()
     db.create_all()
-    add_trello_employee(BOARD_ID)
+    # add_trello_boards_to_projects()
+    # add_trello_employee(BOARD_ID)
+    fetch_trello_employee()
+    save_trello_projects()
+    fetch_trello_lists()
+    
+    
     
 
 if __name__ == '__main__':
