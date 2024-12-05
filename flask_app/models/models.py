@@ -53,7 +53,7 @@ class Task(db.Model):
     title = db.Column(db.String, nullable=False)
     description = db.Column(db.Text, nullable=True)
     start_date = db.Column(db.Date, nullable=False)
-    end_date = db.Column(db.Date, nullable=True)
+    # end_date = db.Column(db.Date, nullable=True)
     
     assignments = db.relationship('TaskAssignment', backref='task', lazy=True)
 

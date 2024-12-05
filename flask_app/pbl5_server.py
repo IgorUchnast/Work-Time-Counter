@@ -5,6 +5,9 @@ from config.api_key import API_KEY, TOKEN, BASE_URL, BOARD_ID, WORK_SPACE
 import requests
 from datetime import date
 import random
+import logging
+# logging.basicConfig()
+# logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///company.db'
@@ -136,12 +139,14 @@ def get_employee_projects(employee_id):
             'title': project.title,
             'description': project.description,
             'start_date': project.start_date,
-            'end_date': project.end_date,
+            # 'end_date': project.end_date,
             'leader_id': project.leader_id,
         })
     
     # Zwrócenie wyników w formacie JSON
     return jsonify(projects)
+
+
 
 # ************************************************************************************************************
 
@@ -204,7 +209,7 @@ def fetch_trello_lists():
             board_id = board['id']
             lists = get_trello_data(board_id=board_id, data_type='lists')
             if lists:
-                for member in lists:
+                for list in lists:
                     save_trello_lists(board_id=board_id)
 
 def fetch_trello_employee():
@@ -216,8 +221,19 @@ def fetch_trello_employee():
             if members:
                 for member in members:
                     save_trello_employee(board_id=board_id)
+                    # save_project_members(board_id=board_id)
 
-                    
+def fetch_trello_project_members():
+    boards = get_boards_in_workspace(WORK_SPACE)
+    if boards:
+        for board in boards:
+            board_id = board['id']
+            members = get_trello_data(board_id, data_type='members')
+            if members:
+                for member in members:
+                    save_project_members(board_id=board_id)
+
+
 
 def save_trello_employee(board_id):
     board_members = get_trello_data(board_id, data_type='members') 
@@ -237,8 +253,80 @@ def save_trello_employee(board_id):
                     # position='Software Developer'
                     position= random.choice(["Software Developer", "Mobile-App Developer", "Web-App Developer"])
                 )
+                # db.session.add(employee)
+    # db.session.commit()
                 db.session.add(employee)
                 db.session.commit()
+                db.session.flush()
+                # project_member = ProjectMember.query.filter_by(employee_id=employee.employee_id).first()
+                # # project = Project.query.filter_by(description=board_id).first()
+                # projects= Project.query.all()
+                # # for project in projects:
+                # #     if board_id == project.description:
+                # if project:
+                #     if not project_member:
+                #         project_member = ProjectMember(
+                #             project_id= board_id,
+                #             employee_id=employee.employee_id,
+                #             role=  employee.position,
+                #             hours_worked= random.choice([1,2,3,1.5,2.5,3.5])
+
+                #         ) 
+                projects = Project.query.all()
+                for project in projects:
+                    # if project.description == board_id:
+                    if project.description.strip() == board_id.strip():
+                        employees = Employee.query.all()
+                        # employees = Employee.query.filter_by(Employee.email).first()
+                        for employee in employees:
+                            project_member = ProjectMember.query.filter_by(employee_id=employee.employee_id,project_id=project.project_id).first()
+                            if not project_member:
+                                project_member = ProjectMember(
+                                    project_id= project.project_id,
+                                    employee_id=employee.employee_id,
+                                    role=employee.position,
+                                    hours_worked= random.choice([1,2,3,1.5,2.5,3.5])
+
+                                )
+                                try:
+                                    db.session.add(project_member)
+                                    db.session.commit()
+                                except Exception as e:
+                                    db.session.rollback()
+                                    print(f"Błąd podczas zapisywania członka projektu: {e}")     
+                        db.session.add(project_member)
+                # db.session.add(employee)
+                db.session.commit()
+
+
+def save_project_members(board_id):
+    # board_members = get_trello_data(board_id, data_type='members') 
+    projects = Project.query.all()
+    for project in projects:
+        # if project.description == board_id:
+        if project.description.strip() == board_id.strip():
+            employees = Employee.query.all()
+            # employees = Employee.query.filter_by(Employee.email).first()
+            # ************************************************************************************
+            # Wszyscy pracownicy są dodawaniu do projektów, jeśli nie są doani do tabeli projkect_member, nawet jeśl nie nalezą do danego projektu
+            # ************************************************************************************
+            for employee in employees:
+                project_member = ProjectMember.query.filter_by(employee_id=employee.employee_id,project_id=project.project_id).first()
+                if not project_member:
+                    project_member = ProjectMember(
+                        project_id= project.project_id,
+                        employee_id=employee.employee_id,
+                        role=employee.position,
+                        hours_worked= random.choice([1,2,3,1.5,2.5,3.5])
+                    )
+                    try:
+                        db.session.add(project_member)
+                        db.session.commit()
+                    except Exception as e:
+                        db.session.rollback()
+                        print(f"Błąd podczas zapisywania członka projektu: {e}") 
+                    # db.session.add(project_member)
+                    # db.session.commit()
 
 def save_trello_lists(board_id):
     board_lists = get_trello_data(board_id, data_type='lists') 
@@ -248,7 +336,6 @@ def save_trello_lists(board_id):
             list_id = list.get('id')
             if not list_id:  # Jeśli brak, ustaw tymczasowy email
                 list_id = None
-            # if project_id == board_id:
             project = Project.query.filter_by(description=board_id).first()
             if project:
                 id = project.project_id
@@ -259,11 +346,27 @@ def save_trello_lists(board_id):
                     title=list['name'],
                     description=list['id'],
                     start_date=date.today(),
-                    # end_date= None
                     # end_date= date.today() if list.get('closed') else '0000-00-00'
                 )
                 db.session.add(task)
                 db.session.commit()
+
+# INICJALIZACJA BAZY DANYCH
+with app.app_context():
+    db.drop_all()
+    db.create_all()
+    # add_trello_boards_to_projects()
+    # add_trello_employee(BOARD_ID)
+    save_trello_projects()
+    fetch_trello_employee()
+    fetch_trello_lists()
+    # fetch_trello_project_members()
+    
+    
+    
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
 # backref
 # backref tworzy automatyczny, dwukierunkowy dostęp między powiązanymi obiektami, 
@@ -273,19 +376,3 @@ def save_trello_lists(board_id):
 # LAZY
 # Lazy loading pozwala zmniejszyć liczbę danych pobieranych w momencie zapytania o obiekt główny (np. Employee). 
 # Dopiero gdy faktycznie potrzebujemy dostępu do powiązanych danych, SQLAlchemy pobiera je z bazy.
-
-# INICJALIZACJA BAZY DANYCH
-with app.app_context():
-    db.drop_all()
-    db.create_all()
-    # add_trello_boards_to_projects()
-    # add_trello_employee(BOARD_ID)
-    fetch_trello_employee()
-    save_trello_projects()
-    fetch_trello_lists()
-    
-    
-    
-
-if __name__ == '__main__':
-    app.run(debug=True)
