@@ -217,11 +217,10 @@ def fetch_trello_employee():
     if boards:
         for board in boards:
             board_id = board['id']
-            members = get_trello_data(board_id, data_type='members')
+            members = get_trello_data(board_id=board_id, data_type='members')
             if members:
                 for member in members:
                     save_trello_employee(board_id=board_id)
-                    # save_project_members(board_id=board_id)
 
 def fetch_trello_project_members():
     boards = get_boards_in_workspace(WORK_SPACE)
@@ -250,54 +249,28 @@ def save_trello_employee(board_id):
                     first_name=member['fullName'].split()[0],
                     last_name=" ".join(member['fullName'].split()[1:]),
                     email=email,
-                    # position='Software Developer'
-                    position= random.choice(["Software Developer", "Mobile-App Developer", "Web-App Developer"])
+                    position= random.choice(["Software Developer", "Mobile-App Developer", "Web-App Developer", "Data Analyss"])
                 )
-                # db.session.add(employee)
-    # db.session.commit()
                 db.session.add(employee)
                 db.session.commit()
-                db.session.flush()
-                # project_member = ProjectMember.query.filter_by(employee_id=employee.employee_id).first()
-                # # project = Project.query.filter_by(description=board_id).first()
-                # projects= Project.query.all()
-                # # for project in projects:
-                # #     if board_id == project.description:
-                # if project:
-                #     if not project_member:
-                #         project_member = ProjectMember(
-                #             project_id= board_id,
-                #             employee_id=employee.employee_id,
-                #             role=  employee.position,
-                #             hours_worked= random.choice([1,2,3,1.5,2.5,3.5])
-
-                #         ) 
-                projects = Project.query.all()
-                for project in projects:
-                    # if project.description == board_id:
-                    if project.description.strip() == board_id.strip():
-                        employees = Employee.query.all()
-                        # employees = Employee.query.filter_by(Employee.email).first()
-                        for employee in employees:
-                            project_member = ProjectMember.query.filter_by(employee_id=employee.employee_id,project_id=project.project_id).first()
-                            if not project_member:
-                                project_member = ProjectMember(
-                                    project_id= project.project_id,
-                                    employee_id=employee.employee_id,
-                                    role=employee.position,
-                                    hours_worked= random.choice([1,2,3,1.5,2.5,3.5])
-
-                                )
-                                try:
-                                    db.session.add(project_member)
-                                    db.session.commit()
-                                except Exception as e:
-                                    db.session.rollback()
-                                    print(f"Błąd podczas zapisywania członka projektu: {e}")     
-                        db.session.add(project_member)
-                # db.session.add(employee)
-                db.session.commit()
-
+            # Powiąż pracownika z aktualnym projektem (board_id)
+            project = Project.query.filter_by(description=board_id).first()
+            if project:
+                # Sprawdź, czy relacja już istnieje
+                project_member = ProjectMember.query.filter_by(
+                    project_id=project.project_id, 
+                    employee_id=employee.employee_id
+                ).first()
+                
+                if not project_member:
+                    project_member = ProjectMember(
+                        project_id=project.project_id,
+                        employee_id=employee.employee_id,
+                        role=employee.position,
+                        hours_worked=random.choice([1, 2, 3, 1.5, 2.5, 3.5])
+                    )
+                    db.session.add(project_member)
+                    db.session.commit()
 
 def save_project_members(board_id):
     # board_members = get_trello_data(board_id, data_type='members') 
@@ -325,8 +298,6 @@ def save_project_members(board_id):
                     except Exception as e:
                         db.session.rollback()
                         print(f"Błąd podczas zapisywania członka projektu: {e}") 
-                    # db.session.add(project_member)
-                    # db.session.commit()
 
 def save_trello_lists(board_id):
     board_lists = get_trello_data(board_id, data_type='lists') 
@@ -334,7 +305,7 @@ def save_trello_lists(board_id):
     if board_lists:
         for list in board_lists:
             list_id = list.get('id')
-            if not list_id:  # Jeśli brak, ustaw tymczasowy email
+            if not list_id:
                 list_id = None
             project = Project.query.filter_by(description=board_id).first()
             if project:
