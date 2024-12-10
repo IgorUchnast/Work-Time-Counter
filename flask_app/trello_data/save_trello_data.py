@@ -1,7 +1,7 @@
-from get_trello_data import get_trello_data
+from trello_data.get_trello_data import get_trello_data
 from models.models import Employee, Project, ProjectMember, Task
 from datetime import date
-from pbl5_server import db
+from db.db_configuration import db
 import random
 
 

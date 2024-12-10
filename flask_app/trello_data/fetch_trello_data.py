@@ -1,8 +1,8 @@
 from config.api_key import WORK_SPACE
-from get_trello_data import get_boards_in_workspace, get_trello_data
+from trello_data.get_trello_data import get_boards_in_workspace, get_trello_data
 from models.models import Employee, Project, ProjectMember
-from save_trello_data import save_trello_employee, save_trello_lists
-from pbl5_server import db
+from trello_data.save_trello_data import save_trello_employee, save_trello_lists
+from db.db_configuration import db
 from datetime import date
 
 def save_trello_projects():

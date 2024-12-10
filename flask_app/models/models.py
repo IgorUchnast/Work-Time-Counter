@@ -1,6 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, jsonify, request
-from pbl5_server import db
+from db.db_configuration import db
 
 # MODELE DANYCH
 
