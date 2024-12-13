@@ -1,9 +1,10 @@
 from config.api_key import WORK_SPACE
-from trello_data.get_trello_data import get_boards_in_workspace, get_trello_data
-from models.models import Employee, Project, ProjectMember
-from trello_data.save_trello_data import save_trello_employee, save_trello_lists
+from trello_data.get_trello_data import get_boards_in_workspace, get_trello_data, get_trello_member_cards, get_trello_cards
+from models.models import Employee, Project, Task, TaskAssignment
+from trello_data.save_trello_data_to_db import save_trello_employee, save_trello_lists, save_trello_cards
 from db.db_configuration import db
 from datetime import date
+from datetime import datetime
 
 def save_trello_projects():
     boards = get_boards_in_workspace(WORK_SPACE)
@@ -19,7 +20,6 @@ def save_trello_projects():
                     title = boards[board_id]['name'],
                     description = boards[board_id]['id'],
                     start_date = date.today(),
-                    # leader_id = random.choice([1, 2])
                     leader_id = 0
                 )
                 db.session.add(board)
@@ -33,8 +33,10 @@ def fetch_trello_lists():
             board_id = board['id']
             lists = get_trello_data(board_id=board_id, data_type='lists')
             if lists:
-                for list in lists:
+                for listt in lists:
                     save_trello_lists(board_id=board_id)
+                    save_trello_cards(list_id=listt['id'])
+
 
 def fetch_trello_employee():
     boards = get_boards_in_workspace(WORK_SPACE)
@@ -55,3 +57,12 @@ def fetch_trello_employee():
                                 project = Project.query.filter_by(description=board_id).first()
                                 project.leader_id = employee.employee_id
                                 db.session.commit()
+
+def fetch_employee_cards():
+    employees = Employee.query.all()
+    for employee in employees:
+        trello_id = employee.email.split('_')[-1].split('@')[0] 
+        employee_assignments = get_trello_member_cards(trello_id)
+        for employee_assignment in employee_assignments:
+            # tasks = employee_assignment['idCard']
+            pass

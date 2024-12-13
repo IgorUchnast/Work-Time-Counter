@@ -1,4 +1,3 @@
-from flask_sqlalchemy import SQLAlchemy
 from db.db_configuration import db
 
 # MODELE DANYCH
@@ -51,7 +50,7 @@ class Task(db.Model):
     project_id = db.Column(db.Integer, db.ForeignKey('project.project_id'), nullable=False)
     title = db.Column(db.String, nullable=False)
     description = db.Column(db.Text, nullable=True)
-    start_date = db.Column(db.Date, nullable=False)
+    start_date = db.Column(db.Date, nullable=False) 
     # end_date = db.Column(db.Date, nullable=True)
     
     assignments = db.relationship('TaskAssignment', backref='task', lazy=True)
@@ -61,8 +60,16 @@ class TaskAssignment(db.Model):
     __tablename__ = 'task_assignment'
     assignment_id = db.Column(db.Integer, primary_key=True)
     task_id = db.Column(db.Integer, db.ForeignKey('task.task_id'), nullable=False)
-    employee_id = db.Column(db.Integer, db.ForeignKey('employee.employee_id'), nullable=False)
-    hours_spent = db.Column(db.Numeric, nullable=True)
+    employee_id = db.Column(db.Integer, db.ForeignKey('employee.employee_id'), nullable=True)
+    # Added for test 
+    # **********
+    description = db.Column(db.Text, nullable=True)
+    trello_id = db.Column(db.Text, nullable=True)
+    # trello_id = db.Column(db.Text, nullable=True, primary_key=True)
+    name = db.Column(db.Text, nullable=True)
+    # **********
+    # hours_spent = db.Column(db.Numeric, nullable=True)
+    start_date = db.Column(db.Date, nullable=False)
 
 
 class Meeting(db.Model):

@@ -32,3 +32,37 @@ def get_trello_data(board_id, data_type):
     else:
         print(f"Błąd: {response.status_code}")
         return None
+    
+def get_trello_member_cards(member_id):
+    
+    url = f"{BASE_URL}/members/{member_id}/cards"
+    params = {
+        'key': API_KEY,
+        'token': TOKEN
+    }
+
+    response = requests.get(url, params=params)
+    
+    # Sprawdzenie, czy zapytanie się powiodło
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Błąd: {response.status_code}")
+        return None
+    
+def get_trello_cards(list_id):
+    
+    url = f"{BASE_URL}/lists/{list_id}/cards"
+    params = {
+        'key': API_KEY,
+        'token': TOKEN
+    }
+
+    response = requests.get(url, params=params)
+    
+    # Sprawdzenie, czy zapytanie się powiodło
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Błąd: {response.status_code}")
+        return None
