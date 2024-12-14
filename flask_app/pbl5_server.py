@@ -1,7 +1,35 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, abort
 from db.db_configuration import app, db
 from models.models import Employee, Project, Task, TaskAssignment
 from trello_data.fetch_trello_data import fetch_trello_employee, fetch_trello_lists, save_trello_projects
+
+
+# # Endpoint obsługujący webhooki Trello
+# @app.route('/webhook/trello', methods=['HEAD', 'POST'])
+# def trello_webhook():
+#     """
+#     Endpoint obsługujący webhooki Trello.
+#     """
+#     if request.method == 'HEAD':
+#         # Trello wysyła HEAD przy weryfikacji webhooka - zwracamy 200 OK
+#         return '', 200
+
+#     # Obsługa POST - odczyt danych przesłanych przez Trello
+#     data = request.json
+#     if not data or 'action' not in data:
+#         return jsonify({"error": "Invalid payload"}), 400
+
+#     action_type = data['action']['type']
+#     print(f"Webhook received action: {action_type}")
+
+#     # Przykładowa obsługa akcji Trello
+#     if action_type in ['createCard', 'updateCard', 'deleteCard']:
+#         print(f"Synchronizowanie zmian w Trello: {action_type}")
+#         save_trello_projects()  # Aktualizacja projektów
+#         fetch_trello_employee()  # Aktualizacja pracowników
+#         fetch_trello_lists()  # Aktualizacja list zadań
+
+#     return jsonify({"message": "Webhook handled"}), 200
 
 @app.route('/employees', methods=['GET', 'POST'])
 def add_new_employee():
@@ -59,7 +87,7 @@ def get_employee_task(employee_id):
         })
     return jsonify(tasks)
 
-@app.route('/projects/', methods=['GET'])
+@app.route('/projects', methods=['GET'])
 def get_projects(): 
     projects = Project.query.all()
     return jsonify([{
@@ -70,21 +98,35 @@ def get_projects():
         "leader_id" : project.leader_id,
     } for project in projects]), 200
 
+@app.route('/projects', methods=['GET'])
+def get_task_assignments(): 
+    projects = Project.query.all()
+    return jsonify([{
+        "project_id": project.project_id, 
+        "title": project.title, 
+        "description": project.description, 
+        "start_date": project.start_date,
+        "leader_id" : project.leader_id,
+    } for project in projects]), 200
 
-@app.route('/project/<int:project_id>/members', methods=['GET'])
-def get_project_members(project_id):
-    project = Project.query.get_or_404(project_id)
-    employees = []
-    for project_member in project.members:
-        employee = Employee.query.get(project_member.employee_id)
-        employees.append({
-            'employee_id': employee.employee_id, 
-            'first_name': employee.first_name, 
-            'last_name': employee.last_name, 
-            'email': employee.email, 
-            'position': employee.position, 
-        })
-    return jsonify(employees)
+# TO NIE DZIAŁA
+# @app.route('/project/<int:project_id>/task/<int:task_id>/assignments', methods=['GET'])
+# def get_project_members(project_id, task_id):
+#     project = Project.query.get_or_404(project_id)
+#     task = Task.query.get_or_404(task_id)
+#     task_assignments = []
+#     # task_assigmnets = TaskAssignment.query.get_or_404()
+#     for task_assignment in task.assignments:
+#         assignments = TaskAssignment.query.filter_by(task_id=task_assignment.task_id).first()
+#         for assignment in assignments:
+#             task_assignments.append({
+#                 "task_id": assignment.task_id,
+#                 'employee_id': assignment.employee_id,
+#                 'description': assignment.description,
+#                 'name': assignment.name,
+#                 'start_date': assignment.start_date,
+#             })
+#     return jsonify(task_assignments)
 
 @app.route('/project/<int:project_id>/tasks', methods=['GET'])
 def get_project_tasks(project_id):
@@ -104,15 +146,12 @@ def get_project_tasks(project_id):
 
 # INICJALIZACJA BAZY DANYCH
 with app.app_context():
-    db.drop_all()
+    # db.drop_all() 
     db.create_all()
 
     save_trello_projects()
     fetch_trello_employee()
     fetch_trello_lists()
-    # fetch_trello_cards()
-    # fetch_employee_tasks()
-    # save_trello_cards()
     
     
     

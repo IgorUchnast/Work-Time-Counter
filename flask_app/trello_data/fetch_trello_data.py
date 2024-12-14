@@ -58,11 +58,3 @@ def fetch_trello_employee():
                                 project.leader_id = employee.employee_id
                                 db.session.commit()
 
-def fetch_employee_cards():
-    employees = Employee.query.all()
-    for employee in employees:
-        trello_id = employee.email.split('_')[-1].split('@')[0] 
-        employee_assignments = get_trello_member_cards(trello_id)
-        for employee_assignment in employee_assignments:
-            # tasks = employee_assignment['idCard']
-            pass

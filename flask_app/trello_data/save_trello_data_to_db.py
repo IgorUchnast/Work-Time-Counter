@@ -104,5 +104,4 @@ def save_trello_cards(list_id):
                     )
                     db.session.add(task_assignment)
                 db.session.commit()
-            
-# def save_employee_task():
+
