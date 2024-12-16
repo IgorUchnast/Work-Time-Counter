@@ -28,7 +28,6 @@ def get_file(owner, repo, file_name):
     Pobiera plik .gitignore z repozytorium.
     """
     url = f"https://api.github.com/repos/{owner}/{repo}/contents/{file_name}"
-    # url = f"https://api.github.com/repos/{owner}/{repo}/contents/.gitignore"
     response = requests.get(url, headers=HEADERS)
     if response.status_code == 200:
         file_content = response.json()["content"]
@@ -56,39 +55,21 @@ def download_file(owner, repo, path, save_path):
     else:
         print(f"Błąd pobierania pliku {path}: {response.status_code}")
 
-def remove_hash_elements(arr):
-    return [item for item in arr if "#" not in item]
-
 
 def download_python_files(owner, repo):
-    """
-    Pobiera wszystkie pliki .py oraz zapisuje foldery, które je zawierają,
-    pomijając foldery/plik w .gitignore.
-    """
-    # Pobierz zawartość .gitignore
-    gitignore_patterns = get_file(owner, repo, '.gitignore')
-    git_ignore_paths = remove_hash_elements(gitignore_patterns)
-    print(git_ignore_paths)
-    tree = get_repo_tree(owner, repo)
-
-    # Filtrowanie i pobieranie plików
+    tree = get_repo_tree(owner=owner, repo=repo)
     for item in tree:
         # Sprawdzamy tylko pliki .py
         if item["type"] == "blob" and item["path"].endswith(".py"):
-            ignore = False
-            head =  "/".join(item["path"].split("/")[:2])
-            print(head)
-            for path in git_ignore_paths:
-                print(path)
-                if f"{head}/" == f"flask_app/{path}":
-                    ignore = True
-                elif path != f"flask_app/{path}":
-                    print("**********************")
-                    print(head)
-                    print(f"flask_app/{path}")
-                    file_path = item["path"]
-                    save_path = os.path.join(repo, file_path)
-                    download_file(owner, repo, file_path, save_path)
+            prefix = ".venv"
+            # Work-Time-Counter/flask_app/.venv/
+            if prefix in item['path']:
+                continue
+            else:
+                file_path = item["path"]
+                # print(file_path)
+                save_path = os.path.join(repo, file_path)
+                download_file(owner=owner, repo=repo, path= file_path, save_path=f"projects/{save_path}")
 
 if __name__ == "__main__":
     # Pobierz wszystkie pliki .py z repozytorium, pomijając te w .gitignore
