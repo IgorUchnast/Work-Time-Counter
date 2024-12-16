@@ -9,7 +9,7 @@ test/llama_test.py
 # /.gitignore
 #ignorowanie llama
 llama_app/config
-llama_app/node_modeules
+llama_app/node_modules
 # ignorowanie wirtualnego środowiska 
 .venv/
 .vscode/
