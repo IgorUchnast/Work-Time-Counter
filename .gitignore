@@ -4,6 +4,13 @@ test/dupa.py
 test/flask_server.py
 test/main.py
 test/test.py
-
+test/llama_test.py
+# ignorowanie .gitignore
+/.gitignore
+#ignorowanie llama
+llama_app/
+# ignorowanie wirtualnego środowiska 
+.venv/
+.vscode
 # Ignorowanie plików w folderze flask_app/config
 flask_app/config/api_key.py
