@@ -1,4 +1,5 @@
 # Ignorowanie plików w folderze test
+test/
 test/api_key.py
 test/dupa.py
 test/flask_server.py
@@ -11,7 +12,7 @@ test/llama_test.py
 llama_app/config/
 llama_app/node_modules/
 # ignorowanie wirtualnego środowiska 
-.venv/
-.vscode/
+flask_app/.venv/
+flask_app/.vscode/
 # Ignorowanie plików w folderze flask_app/config
 flask_app/config/api_key.py
