@@ -26,7 +26,6 @@ def download_file(owner, repo, path, save_path):
 def download_python_files(owner, repo):
     tree = get_repo_tree(owner=owner, repo=repo)
     for item in tree:
-        # Sprawdzamy tylko pliki .py
         if item["type"] == "blob" and item["path"].endswith(".py"):
             prefix = ".venv"
             # Work-Time-Counter/flask_app/.venv/
@@ -34,8 +33,8 @@ def download_python_files(owner, repo):
                 continue
             else:
                 file_path = item["path"]
-                # print(file_path)
                 save_path = os.path.join(repo, file_path)
+                # print(save_path)
                 download_file(owner=owner, repo=repo, path= file_path, save_path=f"projects/{save_path}")
 
 def get_fisrt_commit_id(owner, repo, token):
@@ -43,29 +42,31 @@ def get_fisrt_commit_id(owner, repo, token):
     return all_commits[0]['sha']
 
 def get_new_changes(owner, repo, token):
+    # Pobierz ID pierwszego commita
     commit_id = get_fisrt_commit_id(owner=owner, repo=repo, token=token)
-    commit_details = fetch_commit_details(repo_owner=owner, repo_name=repo, commit_sha=commit_id, auth_token=GITHUB_TOKEN)
+    
+    # Pobierz szczegóły tego commita
+    commit_details = fetch_commit_details(repo_owner=owner, repo_name=repo, commit_sha=commit_id, auth_token=token)
+    
+    # Zainicjuj strukturę dla szczegółów commita
+    commit_changes = {
+        'commit_id': commit_details['sha'],
+        'author_name': commit_details['commit']['author']['name'],
+        'date': commit_details['commit']['author']['date'],
+        'message': commit_details['commit']['message'],
+        'files_changed': []  # Pusta lista na zmiany w plikach
+    }
+
+    # Iteruj po plikach, w których były zmiany
     for file in commit_details['files']:
-        commit_changes = {
-            'commit_id' : commit_details['sha'],
-            'author_name' : commit_details['commit']['author']['name'],
-            'date' : commit_details['commit']['author']['date'],
-            'message' : commit_details['commit']['message'],
-            'files_changed' : [{
-                'filename': file['filename'],
-                'changes' : file['changes'],
-                'additions' : file['additions'],
-                'deletions' : file['deletions'],
-
-            }]
-        }
         commit_changes['files_changed'].append({
-                'filename': file['filename'],
-                'changes' : file['changes'],
-                'additions' : file['additions'],
-                'deletions' : file['deletions'],
+            'filename': file['filename'],
+            'changes': file['changes'],
+            'additions': file['additions'],
+            'deletions': file['deletions']
+        })
 
-            })
+    # Zwróć szczegóły commita
     return commit_changes
 
 
@@ -78,12 +79,20 @@ def find_changed_files(owner, repo, token):
     return changed_files
 
 
-# def analyse_changes_in_files(owner, repo, token):
-#     changed_files = find_changed_files(owner, repo, token)
-#     tree = get_repo_tree(owner=owner, repo=repo)
-#     for file in changed_files:
-#         for item in tree:
-#             if file in item['path']:
+def analyse_changes_in_files(owner, repo, token):
+    changed_files = find_changed_files(owner, repo, token)
+    tree = get_repo_tree(owner=owner, repo=repo)
+    for file_path in changed_files:
+        for item in tree:
+            if item["type"] == "blob" and item["path"].endswith(".py"):
+                if file_path in item['path']:
+                    project_path = "/Users/igoruchnast/Documents/PW/PBL5/FLASK_SERVER/llama_app/projects" 
+                    save_path = f"{project_path}" + "/" + f"{repo}" + "/" +f"{item['path']}"
+                    # save_path = os.path.join(repo, file_path)
+                    print(save_path)
+                    with open(save_path, 'r', encoding='utf-8') as files:
+                        content = files.read()  # Wczytanie całej zawartości pliku
+    return content  # Wyświetlenie zawartości pliku
                 
                 
 

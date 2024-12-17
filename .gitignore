@@ -1,10 +1,15 @@
 test/
 #ignorowanie llama
-llama_app/config/
-llama_app/node_modules/
+config/
+node_modules/
 projects/
 # ignorowanie wirtualnego środowiska 
 .venv/
 .vscode/
+# ignorowanie danych w db
+db/
 # Ignorowanie plików w folderze flask_app/config
+config/
 flask_app/config/api_key.py
+# macOS Files
+.DS_Stores
