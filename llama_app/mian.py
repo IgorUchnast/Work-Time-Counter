@@ -10,7 +10,7 @@ import os
 if __name__ == "__main__":
     
     try:
-        print(download_python_files(OWNER, REPO))
+        # print(download_python_files(OWNER, REPO))
         print(find_changed_files(OWNER, REPO, GITHUB_TOKEN))
         print("**********************")
         print(analyse_changes_in_files(OWNER, REPO, GITHUB_TOKEN))

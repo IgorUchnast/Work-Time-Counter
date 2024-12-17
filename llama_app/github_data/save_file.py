@@ -75,7 +75,7 @@ def find_changed_files(owner, repo, token):
     changed_files = []
     for file_name in commit_changes['files_changed']:
         changed_files.append(file_name['filename'])
-
+        print(file_name)
     return changed_files
 
 
@@ -92,7 +92,8 @@ def analyse_changes_in_files(owner, repo, token):
                     print(save_path)
                     with open(save_path, 'r', encoding='utf-8') as files:
                         content = files.read()  # Wczytanie całej zawartości pliku
-    return content  # Wyświetlenie zawartości pliku
+                        
+                    return content  # Wyświetlenie zawartości pliku
                 
                 
 
