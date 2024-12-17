@@ -70,18 +70,25 @@ def get_new_changes(owner, repo, token):
     return commit_changes
 
 
-def find_changed_files(owner, repo, token): 
+def find_changed_files_paths(owner, repo, token): 
     commit_changes =  get_new_changes(owner=owner, repo=repo, token=token)
     changed_files = []
     for file_name in commit_changes['files_changed']:
         changed_files.append(file_name['filename'])
-        print(file_name)
     return changed_files
 
 
-def analyse_changes_in_files(owner, repo, token):
-    changed_files = find_changed_files(owner, repo, token)
+def save_file(file_path):
+     with open(file_path, 'r', encoding='utf-8') as files:
+        content = files.read()  # Wczytanie całej zawartości pliku
+        return content
+
+
+
+def get_changed_files(owner, repo, token):
+    changed_files = find_changed_files_paths(owner, repo, token)
     tree = get_repo_tree(owner=owner, repo=repo)
+    contents = []
     for file_path in changed_files:
         for item in tree:
             if item["type"] == "blob" and item["path"].endswith(".py"):
@@ -89,11 +96,11 @@ def analyse_changes_in_files(owner, repo, token):
                     project_path = "/Users/igoruchnast/Documents/PW/PBL5/FLASK_SERVER/llama_app/projects" 
                     save_path = f"{project_path}" + "/" + f"{repo}" + "/" +f"{item['path']}"
                     # save_path = os.path.join(repo, file_path)
-                    print(save_path)
-                    with open(save_path, 'r', encoding='utf-8') as files:
-                        content = files.read()  # Wczytanie całej zawartości pliku
-                        
-                    return content  # Wyświetlenie zawartości pliku
+                    # print(save_path)
+                    content = save_file(file_path=save_path)
+                    # print(content)
+                    contents.append(content)
+    return contents  # Wyświetlenie zawartości pliku
                 
                 
 
