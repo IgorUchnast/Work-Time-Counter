@@ -23,11 +23,12 @@ if __name__ == "__main__":
                 if msg == 'F':
                     continue
                 elif msg == 'T':
-
                     files_old = get_changed_files(OWNER, REPO, GITHUB_TOKEN)
                     files_new = get_new_changed_files(OWNER, REPO, GITHUB_TOKEN)
                     tab = [files_old,files_new]
-                    prompt = "Dostaniejsz do analizy pliki nowe (Najnowszy Commit) i stare (Poprzedni Commit) z projketu, który jest na githubie. Masz przeanalizować zmiany w plikach na podstawie zmiany w poszczególnych commitów. Powiedz mi jakie rónice w kodzie zostały znalezione, jakie kluczowe elementy zostały dodane"
+                    # for file
+                    # prompt = "Dostaniejsz do analizy pliki nowe (Najnowszy Commit) i stare (Poprzedni Commit) z projketu, który jest na githubie. Masz przeanalizować zmiany w plikach na podstawie zmiany w poszczególnych commitów. Powiedz mi jakie rónice w kodzie zostały znalezione, jakie kluczowe elementy zostały dodane"
+                    prompt = "Przepisz kod, który dostajesz"
                     output = connect_to_llama(prompt_message=prompt, prompt_data=tab)
                     print(output)
                 else:
