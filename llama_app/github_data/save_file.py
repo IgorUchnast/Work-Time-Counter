@@ -78,12 +78,15 @@ def find_changed_files_paths(owner, repo, token):
     return changed_files
 
 
-def save_file(file_path):
+def opne_file(file_path):
      with open(file_path, 'r', encoding='utf-8') as files:
         content = files.read()  # Wczytanie całej zawartości pliku
         return content
 
-
+def get_new_changed_files(owner, repo, token):
+    download_python_files(owner, repo)
+    new_changed_files = get_changed_files(owner, repo, token)
+    return new_changed_files
 
 def get_changed_files(owner, repo, token):
     changed_files = find_changed_files_paths(owner, repo, token)
@@ -97,7 +100,7 @@ def get_changed_files(owner, repo, token):
                     save_path = f"{project_path}" + "/" + f"{repo}" + "/" +f"{item['path']}"
                     # save_path = os.path.join(repo, file_path)
                     # print(save_path)
-                    content = save_file(file_path=save_path)
+                    content = opne_file(file_path=save_path)
                     # print(content)
                     contents.append(content)
     return contents  # Wyświetlenie zawartości pliku

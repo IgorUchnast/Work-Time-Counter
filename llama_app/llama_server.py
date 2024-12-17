@@ -62,14 +62,37 @@ def get_data(url):
         return None
 
 # , hint_info
-def connect_to_llama(prompt_message, hint_info):
-    reposne = ollama.chat(
-        model='llama3', messages=[
-            {
-                'role':'user',
-                'content': f"Infomracja na temat sposobu w jaki chcę uzyskać odpowiedź: {hint_info}: 
-                Dane, za pomocą, których masz mi odpowiedzieć:  {prompt_message}",
-            },
-        ])
+# def connect_to_llama(prompt_message, prompt_data):
+#     reposne = ollama.chat(
+#         model='llama3', messages=[
+#             {
+#                 'role':'user',
+#                 'content': f"Infomracja na temat sposobu w jaki chcę uzyskać odpowiedź: {prompt_message}: 
+#                 Dane, za pomocą, których masz mi odpowiedzieć:  {prompt_data}",
+#             },
+#         ])
 
-    print(reposne['message']['content'])
+#     print(reposne['message']['content'])
+
+def connect_to_llama(prompt_message, prompt_data):
+    # Wywołanie funkcji ollama.chat z poprawnym formatem wiadomości
+    response = ollama.chat(
+        model='llama3', 
+        messages=[
+            {
+                'role': 'user',
+                'content': f"""Informacja na temat sposobu, w jaki chcę uzyskać odpowiedź: {prompt_message}
+Dane, za pomocą których masz mi odpowiedzieć: {prompt_data}"""
+            },
+        ]
+    )
+    
+    # Sprawdzenie struktury odpowiedzi
+    if 'message' in response and 'content' in response['message']:
+        print(response['message']['content'])
+    else:
+        print("Błąd: Nie znaleziono wiadomości w odpowiedzi.")
+
+# Przykładowe wywołanie funkcji
+# connect_to_llama("Proszę o podsumowanie", "Dane do analizy...")
+
