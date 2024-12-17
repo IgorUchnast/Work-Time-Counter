@@ -93,6 +93,7 @@ def get_changed_files(owner, repo, token):
     tree = get_repo_tree(owner=owner, repo=repo)
     contents = []
     for file_path in changed_files:
+        # print(file_path)
         for item in tree:
             if item["type"] == "blob" and item["path"].endswith(".py"):
                 if file_path in item['path']:
@@ -102,7 +103,7 @@ def get_changed_files(owner, repo, token):
                     # print(save_path)
                     content = opne_file(file_path=save_path)
                     # print(content)
-                    contents.append(content)
+                    contents.append(content)                    
     return contents  # Wyświetlenie zawartości pliku
                 
                 
