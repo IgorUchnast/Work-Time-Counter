@@ -47,12 +47,15 @@ if __name__ == "__main__":
                     for file in files_new:
                         # print(file)
                         # prompt = "Przepisz kod, który dostajesz"
-                        tab = {
-                            "old_data" : old_files,
-                            "new_data" : file
-                        }
+                        # tab = {
+                        #     "old_data" : [{
+                        #         "llama_server.py" : old_files[0],
+                        #         "llama_server.py" : old_files[1],
+                        #     }],
+                        #     "new_data" : file
+                        # }
                         output = connect_to_llama(prompt_message=prompt, prompt_data=file)
-                        print(output)
+                        # print(output)
                     # for file
                     # prompt = "Dostaniejsz do analizy pliki nowe (Najnowszy Commit) i stare (Poprzedni Commit) z projketu, który jest na githubie. Masz przeanalizować zmiany w plikach na podstawie zmiany w poszczególnych commitów. Powiedz mi jakie rónice w kodzie zostały znalezione, jakie kluczowe elementy zostały dodane"
 

@@ -8,6 +8,7 @@ flask_app/.venv/
 flask_app/.vscode/
 # ignorowanie danych db
 flask_app/db/
+flask_app/instance/
 # Ignorowanie plików w folderze flask_app/config
 flask_app/config
 
