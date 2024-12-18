@@ -8,5 +8,8 @@ test/test.py
 # Ignorowanie plików w folderze flask_app/config
 flask_app/config
 
-#Ignorowanie folderów __pycache__
+# Ignorowanie folderów __pycache__
 __pycache__
+
+# Ignorowanie baz danych
+flask_app/instance
