@@ -9,6 +9,12 @@ flask_app/.vscode/
 # ignorowanie danych db
 flask_app/db/
 # Ignorowanie plików w folderze flask_app/config
-flask_app/config/api_key.py
+flask_app/config
+
+# Ignorowanie folderów __pycache__
+__pycache__
+
+# Ignorowanie baz danych
+flask_app/instance
 # macOS Files
 .DS_Stores
