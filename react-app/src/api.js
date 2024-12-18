@@ -14,5 +14,8 @@ export const getEmployeeTasks = (employee_id) =>
 export const getProjects = () =>
     axios.get(`${API_URL}/projects`)
 
+export const getProjectMembers = (project_id) =>
+    axios.get(`${API_URL}/project/${project_id}/members`)
+
 export const getProjectTasks = (project_id) =>
     axios.get(`${API_URL}/project/${project_id}/tasks`)
