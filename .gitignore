@@ -6,4 +6,4 @@ test/main.py
 test/test.py
 
 # Ignorowanie plików w folderze flask_app/config
-flask_app/config/api_key.py
+flask_app/config
