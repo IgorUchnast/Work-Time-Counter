@@ -48,7 +48,7 @@ def add_new_employee():
      elif request.method == 'GET':
         # Pobieranie listy użytkowników
         employees = Employee.query.all()
-        return jsonify([{"id": employee.employee_id, "first_name": employee.first_name, "last_name": employee.last_name,
+        return jsonify([{"employee_id": employee.employee_id, "first_name": employee.first_name, "last_name": employee.last_name,
                  "email": employee.email, "position": employee.position} for employee in employees]), 200
 
 
