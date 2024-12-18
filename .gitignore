@@ -1,12 +1,12 @@
 test/
-#ignorowanie llama
+# Ignorowanie llama
 llama_app/config/
 llama_app/node_modules/
 llama_app/projects/
-# ignorowanie wirtualnego środowiska 
+# Ignorowanie wirtualnego środowiska 
 flask_app/.venv/
 flask_app/.vscode/
-# ignorowanie danych db
+# Ignorowanie danych db
 flask_app/db/
 flask_app/instance/
 # Ignorowanie plików w folderze flask_app/config
@@ -15,7 +15,6 @@ flask_app/config
 # Ignorowanie folderów __pycache__
 __pycache__
 
-# Ignorowanie baz danych
-flask_app/instance
 # macOS Files
 .DS_Stores
+.DS_Store
