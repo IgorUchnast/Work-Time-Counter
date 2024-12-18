@@ -73,8 +73,46 @@ def get_employee_projects(employee_id):
     # Zwrócenie wyników w formacie JSON
     return jsonify(projects)
 
-@app.route('/employee/<int:employee_id>/tasks', methods=['GET'])
-def get_employee_task(employee_id):
+# Dodano nową funkcje, wsysyła dane od nośnie zadań przypisanuych do konkretnego pracwnika 
+@app.route('/employee/<int:employee_id>/task/<int:task_id>/assigned_tasks', methods=['GET'])
+def get_employee_task_assignments(employee_id, task_id):
+    tasks = []
+    employee = Employee.query.get_or_404(employee_id)
+    if employee:
+        employee_task_assignments = employee.task_assignments
+        if employee_task_assignments:
+            for assignment in employee_task_assignments:
+                task= Task.query.filter_by(task_id=task_id).first()
+                if assignment.task_id == task_id:
+                    tasks.append({
+                        'task_name' : task.name,
+                        'task_id': assignment.task_id,
+                        'employee_id': assignment.employee_id,
+                        'name': assignment.name,
+                        'description': assignment.description,
+                        'start_date': assignment.start_date,
+                    })
+    return jsonify(tasks)
+         
+        # employee_assignments = TaskAssignment.query.filter_by(task_id=assignment.task_id).first()
+        
+                # if task_assignments:
+                #     if task_assignments.task_id == assignment.task_id:
+                #     # for employee_assignment in employee_assignments:
+                #         task= Task.query.filter_by(task_id=task_id).first()
+                #         tasks.append({
+                #             'task_name' : task.name,
+                #             'task_id': assignment.task_id,
+                #             'employee_id': assignment.employee_id,
+                #             'name': assignment.name,
+                #             'description': assignment.description,
+                #             'start_date': assignment.start_date,
+                #         })
+    # return jsonify(tasks)
+
+# zmiana z /tasks -> /taskassignments
+@app.route('/employee/<int:employee_id>/task_assignments', methods=['GET'])
+def get_employee_tasks_assignments(employee_id):
     employee = Employee.query.get_or_404(employee_id)
     tasks = []
     for task in employee.task_assignments:
