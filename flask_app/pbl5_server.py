@@ -134,7 +134,7 @@ def get_project_tasks(project_id):
         tasks.append({
             'task_id': task.task_id,
             'project_id': task.project_id,
-            'title': task.title,
+            'name': task.name,
             'description': task.description,
             'start_date': task.start_date,
         })
@@ -143,7 +143,7 @@ def get_project_tasks(project_id):
 
 # INICJALIZACJA BAZY DANYCH
 with app.app_context():
-    # db.drop_all() 
+    db.drop_all() 
     db.create_all()
 
     save_trello_projects()

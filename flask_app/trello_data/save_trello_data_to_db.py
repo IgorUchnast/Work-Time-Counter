@@ -59,7 +59,7 @@ def save_trello_lists(board_id):
             if not task:
                 task = Task(
                     project_id= id,
-                    title=list['name'],
+                    name=list['name'],
                     description=list['id'],
                     start_date=date.today(),
                     # end_date= date.today() if list.get('closed') else '0000-00-00'

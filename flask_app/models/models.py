@@ -48,7 +48,7 @@ class Task(db.Model):
     __tablename__ = 'task'
     task_id = db.Column(db.Integer, primary_key=True)
     project_id = db.Column(db.Integer, db.ForeignKey('project.project_id'), nullable=False)
-    title = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False)
     description = db.Column(db.Text, nullable=True)
     start_date = db.Column(db.Date, nullable=False) 
     # end_date = db.Column(db.Date, nullable=True)
