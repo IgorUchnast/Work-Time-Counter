@@ -1,11 +1,15 @@
-# Ignorowanie plików w folderze test
-test/api_key.py
-test/dupa.py
-test/flask_server.py
-test/main.py
-test/test.py
-
+test/
+#ignorowanie llama
+llama_app/config/
+llama_app/node_modules/
+llama_app/projects/
+# ignorowanie wirtualnego środowiska 
+flask_app/.venv/
+flask_app/.vscode/
+# ignorowanie danych db
+flask_app/db/
 # Ignorowanie plików w folderze flask_app/config
+<<<<<<< HEAD
 flask_app/config
 
 # Ignorowanie folderów __pycache__
@@ -13,3 +17,8 @@ __pycache__
 
 # Ignorowanie baz danych
 flask_app/instance
+=======
+flask_app/config/api_key.py
+# macOS Files
+.DS_Stores
+>>>>>>> 158224219a65f78026ca68207b15b7b535f1659c

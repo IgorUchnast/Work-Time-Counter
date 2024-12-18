@@ -109,24 +109,21 @@ def get_task_assignments():
         "leader_id" : project.leader_id,
     } for project in projects]), 200
 
-# TO NIE DZIAŁA
-# @app.route('/project/<int:project_id>/task/<int:task_id>/assignments', methods=['GET'])
-# def get_project_members(project_id, task_id):
-#     project = Project.query.get_or_404(project_id)
-#     task = Task.query.get_or_404(task_id)
-#     task_assignments = []
-#     # task_assigmnets = TaskAssignment.query.get_or_404()
-#     for task_assignment in task.assignments:
-#         assignments = TaskAssignment.query.filter_by(task_id=task_assignment.task_id).first()
-#         for assignment in assignments:
-#             task_assignments.append({
-#                 "task_id": assignment.task_id,
-#                 'employee_id': assignment.employee_id,
-#                 'description': assignment.description,
-#                 'name': assignment.name,
-#                 'start_date': assignment.start_date,
-#             })
-#     return jsonify(task_assignments)
+
+@app.route('/project/<int:project_id>/members', methods=['GET'])
+def get_project_members(project_id):
+    project = Project.query.get_or_404(project_id)
+    employees = []
+    for project_member in project.members:
+        employee = Employee.query.get(project_member.employee_id)
+        employees.append({
+            'employee_id': employee.employee_id, 
+            'first_name': employee.first_name, 
+            'last_name': employee.last_name, 
+            'email': employee.email, 
+            'position': employee.position, 
+        })
+    return jsonify(employees)
 
 @app.route('/project/<int:project_id>/tasks', methods=['GET'])
 def get_project_tasks(project_id):
