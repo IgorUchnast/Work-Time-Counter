@@ -85,6 +85,7 @@ def get_employee_task_assignments(employee_id, task_id):
                 task= Task.query.filter_by(task_id=task_id).first()
                 if assignment.task_id == task_id:
                     tasks.append({
+                        'assignment_id': assignment.assignment_id,
                         'task_name' : task.name,
                         'task_id': assignment.task_id,
                         'employee_id': assignment.employee_id,
@@ -117,6 +118,7 @@ def get_employee_tasks_assignments(employee_id):
     tasks = []
     for task in employee.task_assignments:
         tasks.append({
+            'assignment_id': task.assignment_id,
             'task_id': task.task_id,
             'employee_id': task.employee_id,
             'name': task.name,
