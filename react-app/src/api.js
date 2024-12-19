@@ -9,7 +9,7 @@ export const getEmployeeProjects = (employee_id) =>
     axios.get(`${API_URL}/employee/${employee_id}/projects`)
 
 export const getEmployeeTasks = (employee_id) =>
-    axios.get(`${API_URL}/employee/${employee_id}/tasks`)
+    axios.get(`${API_URL}/employee/${employee_id}/task_assignments`)
 
 export const getProjects = () =>
     axios.get(`${API_URL}/projects`)
