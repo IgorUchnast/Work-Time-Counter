@@ -5,10 +5,11 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import ProjectsTab from './Tabs/ProjectsTab'
 import EmployeesTab from './Tabs/EmployeesTab'
-import TasksTab from './Tabs/TasksTab'
 import MeetingsTab from './Tabs/MeetingsTab'
 import { useParams } from 'react-router-dom'
 import Sidebar from './Sidebar/Sidebar'
+import EmployeesTasksTab from './Tabs/EmployeeTasksTab'
+import ProjectTasksTab from './Tabs/ProjectTasksTab'
 
 const Dashboard = ({ type }) => {
     let params = useParams()
@@ -35,7 +36,7 @@ const Dashboard = ({ type }) => {
                                 <ProjectsTab employee_id={params.employee_id}/>
                             </Tab>
                             <Tab eventKey="tasks" title="Zadania">
-                                <TasksTab employee_id={params.employee_id}/>
+                                <EmployeesTasksTab employee_id={params.employee_id}/>
                             </Tab>
                             <Tab eventKey="meetings" title="Spotkania">
                                 <MeetingsTab employee_id={params.employee_id}/>
@@ -53,7 +54,7 @@ const Dashboard = ({ type }) => {
                                 <EmployeesTab project_id={params.project_id}/>
                             </Tab>
                                 <Tab eventKey="tasks" title="Zadania">
-                                <TasksTab project_id={params.project_id}/>
+                                <ProjectTasksTab project_id={params.project_id}/>
                             </Tab>
                             <Tab eventKey="meetings" title="Spotkania">
                                 <MeetingsTab project_id={params.project_id}/>

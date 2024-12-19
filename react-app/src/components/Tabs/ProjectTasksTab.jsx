@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
-import { getEmployeeTasks, getProjectTasks } from "../../api"
+import { getProjectTasks } from "../../api"
 import ListGroup from "react-bootstrap/ListGroup"
 
-const TasksTab = ({ employee_id, project_id }) => {
+const ProjectTasksTab = ({ project_id }) => {
     const [tasks, setTasks] = useState([])
     const [expandedTaskId, setExpandedTaskId] = useState(null)
 
@@ -11,35 +11,20 @@ const TasksTab = ({ employee_id, project_id }) => {
     }
 
     useEffect(() => {
-        if(employee_id) {
-            getEmployeeTasks(employee_id)
-                .then((response) => {
-                    setTasks(response.data || [])
-                })
-                .catch((err) => {
-                    console.error("Error fetching employee tasks:", err)
-                    setTasks([])
-                })
-        }
-        if(project_id) {
-            getProjectTasks(project_id)
-                .then((response) => {
-                    setTasks(response.data || [])
-                })
-                .catch((err) => {
-                    console.error("Error fetching project tasks:", err)
-                    setTasks([])
-                })
-        }
-    }, [ employee_id, project_id])
+        getProjectTasks(project_id)
+            .then((response) => {
+                setTasks(response.data || [])
+            })
+            .catch((err) => {
+                console.error("Error fetching project tasks:", err)
+                setTasks([])
+            })
+    }, [project_id])
 
     if(!tasks.length) return <div>Ładowanie zadań...</div>
 
     return (
         <div>
-            {project_id === null && (
-                <h3>Zadania pracownika {employee_id}</h3>
-            )}
             <h3>Zadania projektu {project_id}</h3>
             <ListGroup>
                 {tasks.map((task) => (
@@ -56,7 +41,6 @@ const TasksTab = ({ employee_id, project_id }) => {
                         </ListGroup.Item>
                         {expandedTaskId === task.task_id && (
                             <div style={{ marginBottom: "10px", padding: "10px", backgroundColor: "#f8f9fa", border: "1px solid #ddd" }}>
-                                <p><strong>Id projektu: </strong>{task.project_id}</p>
                                 <p><strong>Opis: </strong>{task.description}</p>
                                 <p><strong>Data rozpoczęcia: </strong>{task.start_date}</p>
                             </div>
@@ -68,4 +52,4 @@ const TasksTab = ({ employee_id, project_id }) => {
     )
 }
 
-export default TasksTab
+export default ProjectTasksTab
