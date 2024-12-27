@@ -1,11 +1,11 @@
 import axios from "axios"
 
-const API_URL = "http://localhost:5000"
+const API_URL = "http://127.0.0.1:5000"
 
 export const getEmployees = () =>
     axios.get(`${API_URL}/employees`)
 
-export const getEmployeeProjects = (employee_id) => 
+export const getEmployeeProjects = (employee_id) =>
     axios.get(`${API_URL}/employee/${employee_id}/projects`)
 
 export const getEmployeeTasks = (employee_id) =>

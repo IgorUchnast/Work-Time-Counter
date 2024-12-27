@@ -82,7 +82,7 @@ def get_employee_task_assignments(employee_id, task_id):
         employee_task_assignments = employee.task_assignments
         if employee_task_assignments:
             for assignment in employee_task_assignments:
-                task= Task.query.filter_by(task_id=task_id).first()
+                task = Task.query.filter_by(task_id=task_id).first()
                 if assignment.task_id == task_id:
                     tasks.append({
                         'task_name' : task.name,
@@ -93,22 +93,6 @@ def get_employee_task_assignments(employee_id, task_id):
                         'start_date': assignment.start_date,
                     })
     return jsonify(tasks)
-         
-        # employee_assignments = TaskAssignment.query.filter_by(task_id=assignment.task_id).first()
-        
-                # if task_assignments:
-                #     if task_assignments.task_id == assignment.task_id:
-                #     # for employee_assignment in employee_assignments:
-                #         task= Task.query.filter_by(task_id=task_id).first()
-                #         tasks.append({
-                #             'task_name' : task.name,
-                #             'task_id': assignment.task_id,
-                #             'employee_id': assignment.employee_id,
-                #             'name': assignment.name,
-                #             'description': assignment.description,
-                #             'start_date': assignment.start_date,
-                #         })
-    # return jsonify(tasks)
 
 # zmiana z /tasks -> /taskassignments
 @app.route('/employee/<int:employee_id>/task_assignments', methods=['GET'])
@@ -127,17 +111,6 @@ def get_employee_tasks_assignments(employee_id):
 
 @app.route('/projects', methods=['GET'])
 def get_projects(): 
-    projects = Project.query.all()
-    return jsonify([{
-        "project_id": project.project_id, 
-        "title": project.title, 
-        "description": project.description, 
-        "start_date": project.start_date,
-        "leader_id" : project.leader_id,
-    } for project in projects]), 200
-
-@app.route('/projects', methods=['GET'])
-def get_task_assignments(): 
     projects = Project.query.all()
     return jsonify([{
         "project_id": project.project_id, 
@@ -177,6 +150,27 @@ def get_project_tasks(project_id):
             'start_date': task.start_date,
         })
     return jsonify(tasks)
+
+@app.route('/project/<int:project_id>/task/<int:task_id>/assignments', methods=['GET'])
+def get_project_task_assignments(project_id, task_id):
+    project = Project.query.get_or_404(project_id)
+    if project:
+        task_assigments = []
+        # project_tasks = project.tasks.query.filter_by(task_id=task_id).first()
+        for project_task in project.tasks:
+            if project_task.task_id == task_id:
+                if project_task:
+                    for assignment in project_task.assignments:
+                        task_assigments.append({
+                            'task_name' : project_task.name,
+                            'task_id': assignment.task_id,
+                            'employee_id': assignment.employee_id,
+                            'name': assignment.name,
+                            'description': assignment.description,
+                            'start_date': assignment.start_date,
+                        })
+    return jsonify(task_assigments)
+
 # ************************************************************************************************************
 
 # INICJALIZACJA BAZY DANYCH
