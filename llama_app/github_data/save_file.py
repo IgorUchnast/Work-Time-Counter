@@ -34,7 +34,7 @@ def download_python_files(owner, repo):
             else:
                 file_path = item["path"]
                 save_path = os.path.join(repo, file_path)
-                # print(save_path)
+                print(save_path)
                 download_file(owner=owner, repo=repo, path= file_path, save_path=f"projects/{save_path}")
 
 def get_fisrt_commit_id(owner, repo, token):
@@ -56,7 +56,6 @@ def get_new_changes(owner, repo, token):
         'message': commit_details['commit']['message'],
         'files_changed': []  # Pusta lista na zmiany w plikach
     }
-
     # Iteruj po plikach, w których były zmiany
     for file in commit_details['files']:
         commit_changes['files_changed'].append({
@@ -65,7 +64,6 @@ def get_new_changes(owner, repo, token):
             'additions': file['additions'],
             'deletions': file['deletions']
         })
-
     # Zwróć szczegóły commita
     return commit_changes
 
@@ -93,16 +91,12 @@ def get_changed_files(owner, repo, token):
     tree = get_repo_tree(owner=owner, repo=repo)
     contents = []
     for file_path in changed_files:
-        # print(file_path)
         for item in tree:
             if item["type"] == "blob" and item["path"].endswith(".py"):
                 if file_path in item['path']:
                     project_path = "/Users/igoruchnast/Documents/PW/PBL5/FLASK_SERVER/llama_app/projects" 
                     save_path = f"{project_path}" + "/" + f"{repo}" + "/" +f"{item['path']}"
-                    # save_path = os.path.join(repo, file_path)
-                    # print(save_path)
                     content = opne_file(file_path=save_path)
-                    # print(content)
                     contents.append(content)                    
     return contents  # Wyświetlenie zawartości pliku
                 

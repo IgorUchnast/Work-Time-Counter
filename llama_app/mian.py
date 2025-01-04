@@ -19,7 +19,7 @@ if __name__ == "__main__":
         # print(download_python_files(OWNER, REPO))
         # print(find_changed_files_paths(OWNER, REPO, GITHUB_TOKEN))
         # print("**********************")
-        # print(get_changed_files(OWNER, REPO, GITHUB_TOKEN))
+        # # print(get_changed_files(OWNER, REPO, GITHUB_TOKEN))
         # print(get_new_changes(OWNER, REPO, GITHUB_TOKEN))
         # Pobierz wszystkie pliki .py z repozytorium, pomijając te w .gitignore
         # download_python_files(OWNER, REPO)
@@ -58,7 +58,6 @@ if __name__ == "__main__":
                         # print(output)
                     # for file
                     # prompt = "Dostaniejsz do analizy pliki nowe (Najnowszy Commit) i stare (Poprzedni Commit) z projketu, który jest na githubie. Masz przeanalizować zmiany w plikach na podstawie zmiany w poszczególnych commitów. Powiedz mi jakie rónice w kodzie zostały znalezione, jakie kluczowe elementy zostały dodane"
-
                 else:
                     continue
 
