@@ -105,7 +105,7 @@ def get_changed_files(owner, repo, token):
                     project_path = "/Users/igoruchnast/Documents/PW/PBL5/FLASK_SERVER/llama_app/projects" 
                     save_path = f"{project_path}" + "/" + f"{repo}" + "/" +f"{item['path']}"
                     content = open_file(file_path=save_path)
-                    contents.append(content)                    
+                    # contents.append(content)                    
                     print(content)
     return contents
 

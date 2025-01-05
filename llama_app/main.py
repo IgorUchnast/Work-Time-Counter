@@ -16,7 +16,7 @@ if __name__ == "__main__":
         # # print(get_new_changed_files(OWNER, REPO, GITHUB_TOKEN))
         # # print(get_new_changes(OWNER, REPO, GITHUB_TOKEN))
         # print("**********************")
-        # print(find_changed_files_paths(OWNER, REPO, GITHUB_TOKEN))
+        print(find_changed_files_paths(OWNER, REPO, GITHUB_TOKEN))
         # print("**********************")
         # ************************************************************************
 
@@ -79,7 +79,7 @@ if __name__ == "__main__":
                     #     Files before new commit {files_before_new_commit}. Changed files after new commit {files_new}"""
                     # output = connect_to_llama(prompt_message=prompt)
                     for i in range(len(files_new)):
-                        prompt = f"Compare these two files for me. Files before new commit {files_before_new_commit[i]}.Changed files after new commit {files_new[i]}. Match them to the category and evaluate according to the given criteria. {evaluation_criteria}"
+                        prompt = f"Compare these two files for me (code in those files). Files before new commit {files_before_new_commit[i]}.Changed files after new commit {files_new[i]}. Match them to the category based on {evaluation_criteria} and evaluate according to the given criteria."
                         output = connect_to_llama(prompt_message=prompt)
                     # for file in files_new:
                     #     output = connect_to_llama(prompt_message=prompt)
