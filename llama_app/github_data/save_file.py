@@ -35,7 +35,7 @@ def download_python_files(owner, repo):
             else:
                 file_path = item["path"]
                 save_path = os.path.join(repo, file_path)
-                print(save_path)
+                # print(save_path)
                 download_file(owner=owner, repo=repo, path= file_path, save_path=f"projects/{save_path}")
 
 # Dostanie ostatniego commita
@@ -106,11 +106,20 @@ def get_changed_files(owner, repo, token):
                     save_path = f"{project_path}" + "/" + f"{repo}" + "/" +f"{item['path']}"
                     content = open_file(file_path=save_path)
                     contents.append(content)                    
-                    print(content)
+                    # print(content)
     return contents
 
+# def get_files_before_commit():
+
+
+# Pliki przed wprowadzeniem najnowszego commita
+def get_files_before_latest_commit(owner, repo, token):
+    files_before_latest_commit = get_changed_files(owner, repo, token)
+    return files_before_latest_commit
+
+# Pliki po wprowadzeniu najnowszego commita
 def get_new_changed_files(owner, repo, token):
-    # download_python_files(owner, repo)
+    download_python_files(owner, repo)
     new_changed_files = get_changed_files(owner, repo, token)
     return new_changed_files                
 

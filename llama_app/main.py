@@ -1,5 +1,5 @@
-from github_data.save_file import download_python_files, get_new_changes, find_changed_files_paths, get_changed_files,get_new_changed_files, open_file
-from github_data.get_repo_data import fetch_commit_details, fetch_all_commits
+from github_data.save_file import get_new_changes, find_changed_files_paths,get_new_changed_files, get_files_before_latest_commit, open_file
+# from github_data.get_repo_data import fetch_commit_details, fetch_all_commits
 from config.config import OWNER, REPO, GITHUB_TOKEN
 from llama_server import connect_to_llama
 # Usuń pojedynczy plik
@@ -9,43 +9,37 @@ from llama_server import connect_to_llama
 if __name__ == "__main__":
     
     try:
-        # get_new_changed_files(OWNER,REPO,GITHUB_TOKEN)
-        # prompt = "Powiedz mi co się dzieje w tym kodzie wytłumacz mi go?"
-        # tab =  " msg = input('Start/Exit : '')"
-        # output = connect_to_llama(prompt_message=prompt, prompt_data=tab)
-        # print(output)
-        # ************************************************************************
-        # print("DUPA")
-        # print(fetch_all_commits)
 
-        # print(download_python_files(OWNER, REPO))
-        print("**********************")
-        print(get_new_changes(OWNER, REPO, GITHUB_TOKEN))
-        print("**********************")
-        print(find_changed_files_paths(OWNER, REPO, GITHUB_TOKEN))
-        print("**********************")
-        # print(get_changed_files(OWNER, REPO, GITHUB_TOKEN))
-        # get_changed_files(OWNER, REPO, GITHUB_TOKEN)
-        # print(get_new_changed_files(OWNER, REPO, GITHUB_TOKEN))
-        # Pobierz wszystkie pliki .py z repozytorium, pomijając te w .gitignore
-        # download_python_files(OWNER, REPO)
-
+        # print("**********************")
+        # print(get_files_before_latest_commit(OWNER, REPO, GITHUB_TOKEN))
+        # print("****************************************************************************************")
+        # # print(get_new_changed_files(OWNER, REPO, GITHUB_TOKEN))
+        # # print(get_new_changes(OWNER, REPO, GITHUB_TOKEN))
+        # print("**********************")
+        # print(find_changed_files_paths(OWNER, REPO, GITHUB_TOKEN))
+        # print("**********************")
         # ************************************************************************
 
-        # msg = input("Start/Exit : ")
-        # if msg == "Start":
-        #     while msg != "Exit":
-        #         msg = input("Analiza nowego commita T/F: ")
-        #         if msg == 'F':
-        #             continue
-        #         elif msg == 'T':
-        #             prompt = input("Co mam wykonać ? ")
-        #             files_new = get_new_changed_files(OWNER, REPO, GITHUB_TOKEN)
-        #             for file in files_new:
-        #                 output = connect_to_llama(prompt_message=prompt, prompt_data=file)
-        #         else:
-                    # continue
+        evaluation_criteria = open_file("/Users/igoruchnast/Documents/PW/PBL5/FLASK_SERVER/llama_app/evaluation_criteria.txt")
+        # prompt = f"Based on those cryteria {evaluation_criteria} evaluate those files after and before new commit. {}"
+        msg = input("Start/Exit : ")
+        if msg == "Start":
+            while msg != "Exit":
+                msg = input("Analiza nowego commita T/F: ")
+                if msg == 'F':
+                    continue
+                elif msg == 'T':
+                    # prompt = input("Co mam wykonać ? ")
+                    files_before_new_commit = get_files_before_latest_commit(OWNER, REPO, GITHUB_TOKEN)
+                    files_new = get_new_changed_files(OWNER, REPO, GITHUB_TOKEN)
+                    prompt = f"Based on those cryteria {evaluation_criteria} evaluate and categorize commits into difrent commit category after and before new commit.
+                        Files before new commit {files_before_new_commit}. Changed files after new commit {files_new}"
+                    for file in files_new:
+                        output = connect_to_llama(prompt_message=prompt)
+                else:
+                    continue
 
     except Exception as e:
         print(f"Błąd: {e}")
 
+print("DUPADUPADUPADUPADUPADUPADUPADUPADUPADUPADUPADUPADUPA")
