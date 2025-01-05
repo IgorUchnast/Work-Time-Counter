@@ -4,7 +4,7 @@ import requests
 import base64
 import os
 
-
+# Pobieranie plików 
 def download_file(owner, repo, path, save_path):
     """
     Pobiera zawartość pliku i zapisuje go lokalnie.
@@ -23,6 +23,7 @@ def download_file(owner, repo, path, save_path):
     else:
         print(f"Błąd pobierania pliku {path}: {response.status_code}")
 
+# Pobieranie wyselekcjonowanych plików
 def download_python_files(owner, repo):
     tree = get_repo_tree(owner=owner, repo=repo)
     for item in tree:
@@ -37,17 +38,23 @@ def download_python_files(owner, repo):
                 print(save_path)
                 download_file(owner=owner, repo=repo, path= file_path, save_path=f"projects/{save_path}")
 
-def get_fisrt_commit_id(owner, repo, token):
+# Dostanie ostatniego commita
+def get_first_commit_id(owner, repo, token):
     all_commits = fetch_all_commits(owner, repo, token)
     return all_commits[0]['sha']
 
+# Dostanie przedostatniego commita
+def get_last_commit_id(owner, repo, token):
+    all_commits = fetch_all_commits(owner, repo, token)
+    return all_commits[1]['sha']
+
+# Pobieranie informacji o zmienionych plikach i autorze tych zmian   
 def get_new_changes(owner, repo, token):
     # Pobierz ID pierwszego commita
-    commit_id = get_fisrt_commit_id(owner=owner, repo=repo, token=token)
+    commit_id = get_first_commit_id(owner=owner, repo=repo, token=token)
     
     # Pobierz szczegóły tego commita
     commit_details = fetch_commit_details(repo_owner=owner, repo_name=repo, commit_sha=commit_id, auth_token=token)
-    
     # Zainicjuj strukturę dla szczegółów commita
     commit_changes = {
         'commit_id': commit_details['sha'],
@@ -67,7 +74,12 @@ def get_new_changes(owner, repo, token):
     # Zwróć szczegóły commita
     return commit_changes
 
+# def get_past_changes(owner, repo, token):
+#     commit_id = get_last_commit_id(owner=owner, repo=repo, token=token)
+#     changed_files = get_new_changes(owner=owner,repo=repo,token=token)
 
+
+# Zmiany w danych ściezkach['llama_app/github_data/get_repo_data.py', 'llama_app/github_data/save_file.py', 'llama_app/main.py']
 def find_changed_files_paths(owner, repo, token): 
     commit_changes =  get_new_changes(owner=owner, repo=repo, token=token)
     changed_files = []
@@ -75,17 +87,13 @@ def find_changed_files_paths(owner, repo, token):
         changed_files.append(file_name['filename'])
     return changed_files
 
-
-def opne_file(file_path):
+# Otwietanie pliku
+def open_file(file_path):
      with open(file_path, 'r', encoding='utf-8') as files:
         content = files.read()  # Wczytanie całej zawartości pliku
         return content
 
-def get_new_changed_files(owner, repo, token):
-    download_python_files(owner, repo)
-    new_changed_files = get_changed_files(owner, repo, token)
-    return new_changed_files
-
+# Wyświetlenie zawartości pliku
 def get_changed_files(owner, repo, token):
     changed_files = find_changed_files_paths(owner, repo, token)
     tree = get_repo_tree(owner=owner, repo=repo)
@@ -96,9 +104,13 @@ def get_changed_files(owner, repo, token):
                 if file_path in item['path']:
                     project_path = "/Users/igoruchnast/Documents/PW/PBL5/FLASK_SERVER/llama_app/projects" 
                     save_path = f"{project_path}" + "/" + f"{repo}" + "/" +f"{item['path']}"
-                    content = opne_file(file_path=save_path)
+                    content = open_file(file_path=save_path)
                     contents.append(content)                    
-    return contents  # Wyświetlenie zawartości pliku
-                
-                
+                    print(content)
+    return contents
+
+def get_new_changed_files(owner, repo, token):
+    # download_python_files(owner, repo)
+    new_changed_files = get_changed_files(owner, repo, token)
+    return new_changed_files                
 
