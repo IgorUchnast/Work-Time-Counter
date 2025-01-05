@@ -1,4 +1,4 @@
-from config.config import HEADERS, GITHUB_TOKEN
+from config.config import HEADERS
 from github_data.get_repo_data import get_repo_tree, fetch_all_commits, fetch_commit_details
 import requests
 import base64

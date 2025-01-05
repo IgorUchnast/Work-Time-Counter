@@ -72,7 +72,6 @@ def fetch_all_commits(repo_owner, repo_name, auth_token, branch="main"):
 def fetch_commit_details(repo_owner, repo_name, commit_sha, auth_token):
     """
     Pobiera szczegółowe dane o konkretnym commicie w repozytorium GitHub.
-    
     :param repo_owner: Właściciel repozytorium (np. "octocat")
     :param repo_name: Nazwa repozytorium (np. "Hello-World")
     :param commit_sha: SHA konkretnego commita
