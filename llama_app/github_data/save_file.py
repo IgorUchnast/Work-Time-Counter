@@ -106,7 +106,7 @@ def get_changed_files(owner, repo, token):
                     save_path = f"{project_path}" + "/" + f"{repo}" + "/" +f"{item['path']}"
                     content = open_file(file_path=save_path)
                     contents.append(content)                    
-                    # print(content)
+                    print(content)
     return contents
 
 # def get_files_before_commit():
