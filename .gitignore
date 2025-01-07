@@ -3,7 +3,8 @@ test/
 llama_app/config/
 llama_app/node_modules/
 llama_app/projects/
-# Ignorowanie wirtualnego środowiska 
+evaluation_criteria.txt
+# ignorowanie wirtualnego środowiska 
 flask_app/.venv/
 flask_app/.vscode/
 # Ignorowanie danych db

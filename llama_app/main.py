@@ -14,7 +14,7 @@ if __name__ == "__main__":
         # print(get_files_before_latest_commit(OWNER, REPO, GITHUB_TOKEN))
         # print("****************************************************************************************")
         # # print(get_new_changed_files(OWNER, REPO, GITHUB_TOKEN))
-        # # print(get_new_changes(OWNER, REPO, GITHUB_TOKEN))
+        print(get_new_changes(OWNER, REPO, GITHUB_TOKEN))
         # print("**********************")
         print(find_changed_files_paths(OWNER, REPO, GITHUB_TOKEN))
         # print("**********************")
@@ -73,14 +73,19 @@ if __name__ == "__main__":
                     # prompt = input("Co mam wykonać ? ")
                     files_before_new_commit = get_files_before_latest_commit(OWNER, REPO, GITHUB_TOKEN)
                     files_new = get_new_changed_files(OWNER, REPO, GITHUB_TOKEN)
+                    print(files_before_new_commit)
+                    print("****************************************************************************************")
+                    print(files_new)
                     # prompt = f"Compare these two files for me. Files before new commit {files_before_new_commit}.Changed files after new commit {files_new}. Match them to the category and evaluate according to the given criteria"
                     # prompt = f"""Based on those cryteria {evaluation_criteria} evaluate and categorize commits into difrent commit category. 
                     #     You will get files after and before new commit.
                     #     Files before new commit {files_before_new_commit}. Changed files after new commit {files_new}"""
                     # output = connect_to_llama(prompt_message=prompt)
-                    for i in range(len(files_new)):
-                        prompt = f"Compare these two files for me (code in those files). Files before new commit {files_before_new_commit[i]}.Changed files after new commit {files_new[i]}. Match them to the category based on {evaluation_criteria} and evaluate according to the given criteria."
-                        output = connect_to_llama(prompt_message=prompt)
+                    # for i in range(len(files_new)):
+                    prompt1 = f"Compare these two files for me (code in those files). Match them to the 1 of 10 categories based on {evaluation_criteria} and evaluate according to the given criteria."
+                    prompt2 = f"Files before new commit: {files_before_new_commit}.Changed files after new commit {files_new}."
+                    output = connect_to_llama(prompt_message=prompt1)
+                    output = connect_to_llama(prompt_message=prompt2)
                     # for file in files_new:
                     #     output = connect_to_llama(prompt_message=prompt)
                 else:
