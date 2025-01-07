@@ -15,9 +15,9 @@ def get_repo_tree(owner, repo):
         return []
 
 
-def get_file(owner, repo, file_name):
+def get_file_decoded(owner, repo, file_name):
     """
-    Pobiera plik .gitignore z repozytorium.
+    Pobiera plik z repozytorium i go dekoduje.
     """
     url = f"https://api.github.com/repos/{owner}/{repo}/contents/{file_name}"
     response = requests.get(url, headers=HEADERS)
@@ -26,7 +26,7 @@ def get_file(owner, repo, file_name):
         decoded_content = base64.b64decode(file_content).decode("utf-8")
         return decoded_content.splitlines()
     else:
-        print(f"Błąd pobierania pliku .gitignore: {response.status_code}")
+        print(f"Błąd pobierania pliku {file_name}: {response.status_code}")
         return []
 
 
@@ -72,7 +72,6 @@ def fetch_all_commits(repo_owner, repo_name, auth_token, branch="main"):
 def fetch_commit_details(repo_owner, repo_name, commit_sha, auth_token):
     """
     Pobiera szczegółowe dane o konkretnym commicie w repozytorium GitHub.
-    
     :param repo_owner: Właściciel repozytorium (np. "octocat")
     :param repo_name: Nazwa repozytorium (np. "Hello-World")
     :param commit_sha: SHA konkretnego commita

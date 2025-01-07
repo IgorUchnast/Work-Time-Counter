@@ -74,15 +74,14 @@ def get_data(url):
 
 #     print(reposne['message']['content'])
 
-def connect_to_llama(prompt_message, prompt_data):
+def connect_to_llama(prompt_message):
     # Wywołanie funkcji ollama.chat z poprawnym formatem wiadomości
     response = ollama.chat(
         model='llama3', 
         messages=[
             {
                 'role': 'user',
-                'content': f"""Informacja na temat sposobu, w jaki chcę uzyskać odpowiedź: {prompt_message}
-Dane, za pomocą których masz mi odpowiedzieć: {prompt_data}"""
+                'content': f"""Information about what i need from you to do: {prompt_message}"""
             },
         ]
     )
