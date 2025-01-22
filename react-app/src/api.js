@@ -19,3 +19,6 @@ export const getProjectMembers = (project_id) =>
 
 export const getProjectTasks = (project_id) =>
     axios.get(`${API_URL}/project/${project_id}/tasks`)
+
+export const getTaskAssignments = (task_id) =>
+    axios.get(`${API_URL}/project/task/${task_id}/assignments`)

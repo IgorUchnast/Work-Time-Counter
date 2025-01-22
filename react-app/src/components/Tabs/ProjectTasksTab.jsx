@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { getProjectTasks } from "../../api"
 import ListGroup from "react-bootstrap/ListGroup"
+import ProjectTaskAssignments from "./ProjectTaskAssignments"
 
 const ProjectTasksTab = ({ project_id }) => {
     const [tasks, setTasks] = useState([])
@@ -41,8 +42,7 @@ const ProjectTasksTab = ({ project_id }) => {
                         </ListGroup.Item>
                         {expandedTaskId === task.task_id && (
                             <div style={{ marginBottom: "10px", padding: "10px", backgroundColor: "#f8f9fa", border: "1px solid #ddd" }}>
-                                <p><strong>Opis: </strong>{task.description}</p>
-                                <p><strong>Data rozpoczęcia: </strong>{task.start_date}</p>
+                                <ProjectTaskAssignments task_id={task.task_id} />
                             </div>
                         )}
                     </div>
