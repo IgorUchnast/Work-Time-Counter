@@ -150,8 +150,11 @@ def get_employee_tasks_assignments(employee_id):
     employee = Employee.query.get_or_404(employee_id)
     tasks = []
     for task in employee.task_assignments:
+        project_task = Task.query.get_or_404(task.task_id)
+        project_name = Project.query.get_or_404(project_task.project_id)
         tasks.append({
             'assignment_id': task.assignment_id,
+            'project_name': project_name.title,
             'task_id': task.task_id,
             'employee_id': task.employee_id,
             'name': task.name,
@@ -214,7 +217,7 @@ def get_project_task_assignments(project_id, task_id):
                     for assignment in project_task.assignments:
                         task_assigments.append({
                             'task_name' : project_task.name,
-                            'task_id': assignment.task_id,
+                            'assignment_id': assignment.assignment_id,
                             'employee_id': assignment.employee_id,
                             'name': assignment.name,
                             'description': assignment.description,
