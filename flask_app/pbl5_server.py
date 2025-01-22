@@ -205,24 +205,23 @@ def get_project_tasks(project_id):
         })
     return jsonify(tasks)
 
-@app.route('/project/<int:project_id>/task/<int:task_id>/assignments', methods=['GET'])
-def get_project_task_assignments(project_id, task_id):
-    project = Project.query.get_or_404(project_id)
-    if project:
+
+@app.route('/project/task/<int:task_id>/assignments', methods=['GET'])
+def get_project_task_assignments(task_id):
+    task = Task.query.get_or_404(task_id)
+    if task:
         task_assigments = []
         # project_tasks = project.tasks.query.filter_by(task_id=task_id).first()
-        for project_task in project.tasks:
-            if project_task.task_id == task_id:
-                if project_task:
-                    for assignment in project_task.assignments:
-                        task_assigments.append({
-                            'task_name' : project_task.name,
-                            'assignment_id': assignment.assignment_id,
-                            'employee_id': assignment.employee_id,
-                            'name': assignment.name,
-                            'description': assignment.description,
-                            'start_date': assignment.start_date,
-                        })
+        for task_assignment in task.assignments:
+            if task_assignment:
+                task_assigments.append({
+                    'task_name' : task.name,
+                    'assignment_id': task_assignment.assignment_id,
+                    'employee_id': task_assignment.employee_id,
+                    'assignment_name': task_assignment.name,
+                    'description': task_assignment.description,
+                    'start_date': task_assignment.start_date,
+                })
     return jsonify(task_assigments)
 
 # ************************************************************************************************************
