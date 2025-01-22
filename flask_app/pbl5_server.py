@@ -1,8 +1,8 @@
 from flask import Flask, jsonify, request, abort
 from db.db_configuration import app, db
-from models.models import Employee, Project, Task, TaskAssignment
+from models.models import Employee, Project, Task, TaskAssignment, WorkStation
 from trello_data.fetch_trello_data import fetch_trello_employee, fetch_trello_lists, save_trello_projects
-
+from datetime import date
 
 # # Endpoint obsługujący webhooki Trello
 # @app.route('/webhook/trello', methods=['HEAD', 'POST'])
@@ -30,6 +30,55 @@ from trello_data.fetch_trello_data import fetch_trello_employee, fetch_trello_li
 #         fetch_trello_lists()  # Aktualizacja list zadań
 
 #     return jsonify({"message": "Webhook handled"}), 200
+
+@app.route('/work_station/<int:employee_id>', methods=['GET', 'POST'])
+def manage_work_station(employee_id):
+    if request.method == 'GET':
+        try:
+            # Pobierz dane stanowiska pracy dla danego pracownika
+            work_station = WorkStation.query.filter_by(employee_id=employee_id).first()
+            if not work_station:
+                return jsonify({"error": "WorkStation not found"}), 404
+            
+            return jsonify({
+                "employee_id": work_station.employee_id,
+                'date': work_station.date,
+                "work_time": float(work_station.work_time) if work_station.work_time is not None else None,
+                "break_time": float(work_station.break_time) if work_station.break_time is not None else None
+            }), 200
+        except Exception as e:
+            return jsonify({"error": "Database error", "details": str(e)}), 500
+    elif request.method == 'POST':
+        try:
+            # Pobierz dane z żądania
+            data = request.get_json()
+            work_time = data.get('work_time')
+            break_time = data.get('break_time')
+            # Sprawdź, czy istnieje rekord dla danego employee_id
+            work_station = WorkStation.query.filter_by(date=data).first()
+            if work_station:
+                # Aktualizuj istniejący rekord
+                if work_time is not None:
+                    work_station.work_time = work_time
+                if break_time is not None:
+                    work_station.break_time = break_time
+            else:
+                # Utwórz nowy rekord
+                work_station = WorkStation(
+                    employee_id=employee_id,
+                    work_time=work_time,
+                    break_time=break_time,
+                    date=date.today(),
+                )
+                db.session.add(work_station)
+            db.session.commit()
+            return jsonify({"message": "WorkStation data saved successfully"}), 200
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": "Database error", "details": str(e)}), 500
+        except Exception as e:
+            return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 400
+
 
 @app.route('/employees', methods=['GET', 'POST'])
 def add_new_employee():

@@ -1,5 +1,5 @@
 from db.db_configuration import db
-
+from datetime import datetime
 # MODELE DANYCH
 
 class Employee(db.Model):
@@ -92,6 +92,8 @@ class MeetingAttendance(db.Model):
 
 class WorkStation(db.Model):
     __tablename__ = 'work_station'
+    # workstation_id = db.Column(db.Integer, primary_key=True)
     employee_id = db.Column(db.Integer, db.ForeignKey('employee.employee_id'), primary_key=True)
     work_time = db.Column(db.Numeric, nullable=True)
     break_time = db.Column(db.Numeric, nullable=True)
+    date = db.Column(db.Date, default=datetime.utcnow)
