@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, abort
 from db.db_configuration import app, db
-from models.models import Employee, Project, Task, TaskAssignment, WorkStation
+from models.models import Employee, Project, Task, TaskAssignment, WorkSummary
 from trello_data.fetch_trello_data import fetch_trello_employee, fetch_trello_lists, save_trello_projects
 from datetime import date
 
@@ -31,20 +31,21 @@ from datetime import date
 
 #     return jsonify({"message": "Webhook handled"}), 200
 
-@app.route('/work_station/<int:employee_id>', methods=['GET', 'POST'])
+@app.route('/employee/<int:employee_id>/work_summary', methods=['GET', 'POST'])
 def manage_work_station(employee_id):
     if request.method == 'GET':
         try:
             # Pobierz dane stanowiska pracy dla danego pracownika
-            work_station = WorkStation.query.filter_by(employee_id=employee_id).first()
-            if not work_station:
+            work_summary = WorkSummary.query.filter_by(employee_id=employee_id).first()
+            if not work_summary:
                 return jsonify({"error": "WorkStation not found"}), 404
             
             return jsonify({
-                "employee_id": work_station.employee_id,
-                'date': work_station.date,
-                "work_time": float(work_station.work_time) if work_station.work_time is not None else None,
-                "break_time": float(work_station.break_time) if work_station.break_time is not None else None
+                "employee_id": work_summary.employee_id,
+                'date': work_summary.date,
+                'task_id': work_summary.task_id,
+                "work_time": float(work_summary.work_time) if work_summary.work_time is not None else None,
+                "break_time": float(work_summary.break_time) if work_summary.break_time is not None else None
             }), 200
         except Exception as e:
             return jsonify({"error": "Database error", "details": str(e)}), 500
@@ -54,23 +55,16 @@ def manage_work_station(employee_id):
             data = request.get_json()
             work_time = data.get('work_time')
             break_time = data.get('break_time')
-            # Sprawdź, czy istnieje rekord dla danego employee_id
-            work_station = WorkStation.query.filter_by(date=data).first()
-            if work_station:
-                # Aktualizuj istniejący rekord
-                if work_time is not None:
-                    work_station.work_time = work_time
-                if break_time is not None:
-                    work_station.break_time = break_time
-            else:
-                # Utwórz nowy rekord
-                work_station = WorkStation(
-                    employee_id=employee_id,
-                    work_time=work_time,
-                    break_time=break_time,
-                    date=date.today(),
-                )
-                db.session.add(work_station)
+            task_id = data.get('task_id')
+            # Utwórz nowy rekord
+            work_station = WorkSummary(
+                employee_id=employee_id,
+                work_time=work_time,
+                break_time=break_time,
+                task_id=task_id,
+                date=date.today(),
+            )
+            db.session.add(work_station)
             db.session.commit()
             return jsonify({"message": "WorkStation data saved successfully"}), 200
         except Exception as e:
@@ -121,6 +115,24 @@ def get_employee_projects(employee_id):
     
     # Zwrócenie wyników w formacie JSON
     return jsonify(projects)
+
+@app.route('/employee/<int:employee_id>/project/<int:project_id>/task_assignments', methods=['GET'])
+def get_employee_project_task_assignment(employee_id, project_id):
+    # Pobranie pracownika z bazy danych
+    tasks = db.session.query(TaskAssignment).join(Task).join(Employee).filter(
+        Employee.employee_id == employee_id, 
+        Task.project_id == project_id
+    ).all()
+    task_assignments = []
+    for task in tasks:
+        task_assignments.append({
+            'assignment_id': task.assignment_id,
+            'assignment_name': task.name,
+            'description': task.description,
+            'start_date': task.start_date,
+        })
+
+    return jsonify(task_assignments)
 
 # Dodano nową funkcje, wsysyła dane od nośnie zadań przypisanuych do konkretnego pracwnika 
 @app.route('/employee/<int:employee_id>/task/<int:task_id>/assigned_tasks', methods=['GET'])
