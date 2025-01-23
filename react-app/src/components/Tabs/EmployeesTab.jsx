@@ -17,7 +17,7 @@ const EmployeesTab = ({ project_id }) => {
             })
     }, [project_id])
 
-    if(!employees.length) return <div>Ładowanie pracowników projektu...</div>
+    if(!employees.length) return <div>Brak pracowników projektu</div>
 
     return (
         <div>

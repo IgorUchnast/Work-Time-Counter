@@ -11,6 +11,12 @@ export const getEmployeeProjects = (employee_id) =>
 export const getEmployeeTasks = (employee_id) =>
     axios.get(`${API_URL}/employee/${employee_id}/task_assignments`)
 
+export const getEmployeeProjectTaskAssignments = (employee_id, project_id) =>
+    axios.get(`${API_URL}/employee/${employee_id}/project/${project_id}/task_assignments`)
+
+export const getEmployeeWorkData = (employee_id) =>
+    axios.get(`${API_URL}/employee/${employee_id}/work_summary`)
+
 export const getProjects = () =>
     axios.get(`${API_URL}/projects`)
 
@@ -19,3 +25,6 @@ export const getProjectMembers = (project_id) =>
 
 export const getProjectTasks = (project_id) =>
     axios.get(`${API_URL}/project/${project_id}/tasks`)
+
+export const getTaskAssignments = (task_id) =>
+    axios.get(`${API_URL}/project/task/${task_id}/assignments`)

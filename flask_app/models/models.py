@@ -15,13 +15,14 @@ class Employee(db.Model):
     project_memberships = db.relationship('ProjectMember', backref='employee', lazy=True)
     task_assignments = db.relationship('TaskAssignment', backref='employee', lazy=True)
     meeting_attendances = db.relationship('MeetingAttendance', backref='employee', lazy=True)
-    work_station = db.relationship('WorkStation', backref='employee', uselist=False)
+    work_summary = db.relationship('WorkSummary', backref='employee', uselist=False)
 
 
 class ProjectMember(db.Model):
     __tablename__ = 'project_member'
-    project_id = db.Column(db.Integer, db.ForeignKey('project.project_id'), primary_key=True)
-    employee_id = db.Column(db.Integer, db.ForeignKey('employee.employee_id'), primary_key=True)
+    project_member_id =db.Column(db.Integer, primary_key=True)
+    project_id = db.Column(db.Integer, db.ForeignKey('project.project_id'))
+    employee_id = db.Column(db.Integer, db.ForeignKey('employee.employee_id'))
     role = db.Column(db.String, nullable=False)
     hours_worked = db.Column(db.Numeric, nullable=True)
 
@@ -90,10 +91,11 @@ class MeetingAttendance(db.Model):
     duration = db.Column(db.Numeric, nullable=True)
 
 
-class WorkStation(db.Model):
-    __tablename__ = 'work_station'
+class WorkSummary(db.Model):
+    __tablename__ = 'work_summary'
     # workstation_id = db.Column(db.Integer, primary_key=True)
     employee_id = db.Column(db.Integer, db.ForeignKey('employee.employee_id'), primary_key=True)
+    task_id = db.Column(db.Integer, db.ForeignKey('task.task_id'), nullable=False)
     work_time = db.Column(db.Numeric, nullable=True)
     break_time = db.Column(db.Numeric, nullable=True)
     date = db.Column(db.Date, default=datetime.utcnow)

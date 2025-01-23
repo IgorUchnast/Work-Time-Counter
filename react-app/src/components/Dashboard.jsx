@@ -8,8 +8,9 @@ import EmployeesTab from './Tabs/EmployeesTab'
 import MeetingsTab from './Tabs/MeetingsTab'
 import { useParams } from 'react-router-dom'
 import Sidebar from './Sidebar/Sidebar'
-import EmployeesTasksTab from './Tabs/EmployeeTasksTab'
+import EmployeeTasksTab from './Tabs/EmployeeTasksTab'
 import ProjectTasksTab from './Tabs/ProjectTasksTab'
+import EmployeeSummaryTab from './Tabs/EmployeeSummaryTab'
 
 const Dashboard = ({ type }) => {
     let params = useParams()
@@ -27,19 +28,19 @@ const Dashboard = ({ type }) => {
                     {type !== null && (type === "employees" ? (
                         <Tabs
                             id={type}
-                            defaultActiveKey="projects"
+                            defaultActiveKey="summary"
                             variant='underline'
                             className="mb-3"
                             justify
                         >
+                            <Tab eventKey="summary" title="Podsumowanie">
+                                <EmployeeSummaryTab employee_id={params.employee_id}/>
+                            </Tab>
                             <Tab eventKey="projects" title="Projekty">
                                 <ProjectsTab employee_id={params.employee_id}/>
                             </Tab>
                             <Tab eventKey="tasks" title="Zadania">
-                                <EmployeesTasksTab employee_id={params.employee_id}/>
-                            </Tab>
-                            <Tab eventKey="meetings" title="Spotkania">
-                                <MeetingsTab employee_id={params.employee_id}/>
+                                <EmployeeTasksTab employee_id={params.employee_id}/>
                             </Tab>
                         </Tabs>
                         ) : (
