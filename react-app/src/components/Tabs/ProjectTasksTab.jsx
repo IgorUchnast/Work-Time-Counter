@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
-import { getProjectTasks } from "../../api"
+import { getProjectTasks, getTaskAssignments } from "../../api"
 import ListGroup from "react-bootstrap/ListGroup"
-import ProjectTaskAssignments from "./ProjectTaskAssignments"
 
 const ProjectTasksTab = ({ project_id }) => {
     const [tasks, setTasks] = useState([])
@@ -22,7 +21,7 @@ const ProjectTasksTab = ({ project_id }) => {
             })
     }, [project_id])
 
-    if(!tasks.length) return <div>Ładowanie zadań...</div>
+    if(!tasks.length) return <div>Brak zadań</div>
 
     return (
         <div>
@@ -45,6 +44,40 @@ const ProjectTasksTab = ({ project_id }) => {
                                 <ProjectTaskAssignments task_id={task.task_id} />
                             </div>
                         )}
+                    </div>
+                ))}
+            </ListGroup>
+        </div>
+    )
+}
+
+const ProjectTaskAssignments = ({ task_id }) => {
+    const [taskAssignments, setTaskAssignments] = useState([])
+
+    useEffect(() => {
+        getTaskAssignments(task_id)
+            .then((response) => {
+                setTaskAssignments(response.data || [])
+            })
+            .catch((err) => {
+                console.error("Error fetching task assignments:", err)
+                setTaskAssignments([])
+            })
+    }, [task_id])
+
+    if(!taskAssignments.length) return <div>Brak podzadań</div>
+
+    return (
+        <div>
+            <ListGroup>
+                {taskAssignments.map((assignment) => (
+                    <div key={assignment.assignment_id}>
+                        <ListGroup.Item>
+                            <p><strong>{assignment.assignment_name}</strong></p>
+                            <p><strong>Opis: </strong>{assignment.description}</p>
+                            <p><strong>Data rozpoczęcia: </strong>{assignment.start_date}</p>
+                            <p><strong>Przypisane dla pracownika: </strong>{assignment.employee_id}</p>
+                        </ListGroup.Item>
                     </div>
                 ))}
             </ListGroup>
