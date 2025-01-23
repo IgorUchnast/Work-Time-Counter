@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { getEmployeeTasks } from "../../api"
 import ListGroup from "react-bootstrap/ListGroup"
 
-const EmployeesTasksTab = ({ employee_id }) => {
+const EmployeeTasksTab = ({ employee_id }) => {
     const [tasks, setTasks] = useState([])
     const [expandedTaskId, setExpandedTaskId] = useState(null)
 
@@ -21,7 +21,7 @@ const EmployeesTasksTab = ({ employee_id }) => {
             })
     }, [employee_id])
 
-    if(!tasks.length) return <div>Ładowanie zadań...</div>
+    if(!tasks.length) return <div>Brak zadań</div>
 
     return (
         <div>
@@ -53,4 +53,4 @@ const EmployeesTasksTab = ({ employee_id }) => {
     )
 }
 
-export default EmployeesTasksTab
+export default EmployeeTasksTab
