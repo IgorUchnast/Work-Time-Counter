@@ -59,8 +59,11 @@ def manage_work_station(employee_id):
             # Utwórz nowy rekord
             work_station = WorkSummary(
                 employee_id=employee_id,
+                # Czas pracy pracownika nad danym zadaniem w ciągu jednego dnia 
                 work_time=work_time,
+                # Czas przerwy pracownika w ciągu jednego dnia
                 break_time=break_time,
+                # ID zadania
                 task_id=task_id,
                 date=date.today(),
             )
