@@ -78,26 +78,39 @@ def get_employee_work_summary(employee_id):
                 grouped_data[date] = {
                     "date": date,
                     "break_time": 0,  # Suma czasu przerw dla danego dnia
-                    "sum_work_time": 0, # Suma czasu pracy dla danego dnia
-                    "task_time": []   # Lista zadań z czasem pracy
+                    "sum_work_time": 0,  # Suma czasu pracy dla danego dnia
+                    "task_time": {}  # Słownik do grupowania zadań według task_id
                 }
             # Dodaj sumę czasu przerwy
             grouped_data[date]["break_time"] += float(ws.break_time) if ws.break_time else 0
-            # Dodaj sumę czasu pracy 
+            # Dodaj sumę czasu pracy
             grouped_data[date]["sum_work_time"] += float(ws.work_time) if ws.work_time else 0
 
-            # Dodaj dane dotyczące konkretnego zadania
-            grouped_data[date]["task_time"].append({
-                "task_id": ws.task_id,
-                "work_time": float(ws.work_time) if ws.work_time is not None else None
-            })
+            # Sumuj czas pracy dla zadań o tym samym task_id
+            task_id = ws.task_id
+            if task_id not in grouped_data[date]["task_time"]:
+                grouped_data[date]["task_time"][task_id] = {
+                    "task_id": task_id,
+                    "work_time": 0
+                }
+            grouped_data[date]["task_time"][task_id]["work_time"] += float(ws.work_time) if ws.work_time else 0
 
         # Przekształć dane z grupowania do listy
-        result = list(grouped_data.values())
+        result = []
+        for date, data in grouped_data.items():
+            # Zamień task_time z dict na listę
+            task_time_list = list(data["task_time"].values())
+            result.append({
+                "date": data["date"],
+                "break_time": data["break_time"],
+                "sum_work_time": data["sum_work_time"],
+                "task_time": task_time_list
+            })
 
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": "Database error", "details": str(e)}), 500
+
 
 
 
