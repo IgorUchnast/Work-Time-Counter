@@ -65,25 +65,40 @@ def data_aggregation(employee_id):
 @app.route('/employee/<int:employee_id>/work_summary', methods=['GET'])
 def get_employee_work_summary(employee_id):
     try:
-        # Pobierz wszystkie rekordy WorkSummary dla pracownika
+        # Pobierz wszystkie rekordy WorkSummary dla danego pracownika
         work_summaries = WorkSummary.query.filter_by(employee_id=employee_id).all()
         if not work_summaries:
             return jsonify({"error": "No work summaries found for this employee"}), 404
 
-        # Przekształć wyniki w listę słowników
-        work_summary_list = [
-            {
-                "employee_id": ws.employee_id,
-                "date": ws.date.isoformat(),
+        # Słownik do grupowania danych według daty
+        grouped_data = {}
+        for ws in work_summaries:
+            date = ws.date.isoformat()
+            if date not in grouped_data:
+                grouped_data[date] = {
+                    "date": date,
+                    "break_time": 0,  # Suma czasu przerw dla danego dnia
+                    "sum_work_time": 0, # Suma czasu pracy dla danego dnia
+                    "task_time": []   # Lista zadań z czasem pracy
+                }
+            # Dodaj sumę czasu przerwy
+            grouped_data[date]["break_time"] += float(ws.break_time) if ws.break_time else 0
+            # Dodaj sumę czasu pracy 
+            grouped_data[date]["sum_work_time"] += float(ws.work_time) if ws.work_time else 0
+
+            # Dodaj dane dotyczące konkretnego zadania
+            grouped_data[date]["task_time"].append({
                 "task_id": ws.task_id,
-                "work_time": float(ws.work_time) if ws.work_time is not None else None,
-                "break_time": float(ws.break_time) if ws.break_time is not None else None,
-            }
-            for ws in work_summaries
-        ]
-        return jsonify(work_summary_list), 200
+                "work_time": float(ws.work_time) if ws.work_time is not None else None
+            })
+
+        # Przekształć dane z grupowania do listy
+        result = list(grouped_data.values())
+
+        return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": "Database error", "details": str(e)}), 500
+
 
 
 
