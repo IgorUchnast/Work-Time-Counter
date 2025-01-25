@@ -3,6 +3,7 @@ from db.db_configuration import app, db
 from models.models import Employee, Project, Task, TaskAssignment, WorkSummary
 from trello_data.fetch_trello_data import fetch_trello_employee, fetch_trello_lists, save_trello_projects
 from datetime import date
+from example_data import add_sample_work_summary
 
 # # Endpoint obsługujący webhooki Trello
 # @app.route('/webhook/trello', methods=['HEAD', 'POST'])
@@ -30,6 +31,10 @@ from datetime import date
 #         fetch_trello_lists()  # Aktualizacja list zadań
 
 #     return jsonify({"message": "Webhook handled"}), 200
+
+
+def setup_sample_data():
+    add_sample_work_summary()
 
 @app.route('/employee/<int:employee_id>/work_time', methods=['POST'])
 def data_aggregation(employee_id):
@@ -254,6 +259,8 @@ with app.app_context():
     save_trello_projects()
     fetch_trello_employee()
     fetch_trello_lists()
+
+    setup_sample_data()
     
     
     
