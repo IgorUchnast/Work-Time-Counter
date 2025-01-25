@@ -60,7 +60,57 @@ def data_aggregation(employee_id):
         return jsonify({"error": "Database error", "details": str(e)}), 500
     except Exception as e:
         return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 400
+    
+#task -> [czas pracy nad taskiem, task_id, task_name, tablica subtask [id, nazwa,czas]]
+@app.route('/project/<int:project_id>/work_summary', methods=['GET'])
+def get_project_work_time_summary(project_id):
+    try:
+        project_summary = []
+        project_tasks = Task.query.filter_by(project_id=project_id).all()
 
+        if not project_tasks:
+            return jsonify({"error": "No tasks found for the given project"}), 404
+
+        for task in project_tasks:
+            task_assignments = TaskAssignment.query.filter_by(task_id=task.task_id).all()
+
+            data = {
+                'task_id': task.task_id,
+                'task_name': task.name,
+                'task_work_time': 0,
+                'task_assignments': []
+            }
+
+            for task_assignment in task_assignments:
+                work_summaries = WorkSummary.query.filter_by(task_id=task_assignment.task_id).all()
+
+                for ws in work_summaries:
+                    data['task_work_time'] += float(ws.work_time) if ws.work_time else 0
+
+                    # Znajdź istniejące zadanie w `task_assignments` lub dodaj nowe
+                    assignment_data = next(
+                        (item for item in data['task_assignments'] if item['task_assignment'] == task_assignment.name),
+                        None
+                    )
+
+                    if not assignment_data:
+                        assignment_data = {
+                            'task_id': task_assignment.task_id,
+                            'task_assignment': task_assignment.name,
+                            'work_time': 0,
+                            'employee_id': ws.employee_id
+                        }
+                        data['task_assignments'].append(assignment_data)
+
+                    assignment_data['work_time'] += float(ws.work_time) if ws.work_time else 0
+
+            project_summary.append(data)
+
+        return jsonify(project_summary), 200
+    except Exception as e:
+        return jsonify({"error": "Database error", "details": str(e)}), 500
+
+    
 
 @app.route('/employee/<int:employee_id>/work_summary', methods=['GET'])
 def get_employee_work_summary(employee_id):
@@ -110,9 +160,6 @@ def get_employee_work_summary(employee_id):
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": "Database error", "details": str(e)}), 500
-
-
-
 
 
 @app.route('/employees', methods=['GET', 'POST'])
