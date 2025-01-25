@@ -95,7 +95,7 @@ class WorkSummary(db.Model):
     __tablename__ = 'work_summary'
     worksummary_id = db.Column(db.Integer, primary_key=True)
     employee_id = db.Column(db.Integer, db.ForeignKey('employee.employee_id'))
-    task_id = db.Column(db.Integer, db.ForeignKey('task.task_id'), nullable=False)
+    task_id = db.Column(db.Integer, db.ForeignKey('task_assignment.assignment_id'), nullable=False)
     work_time = db.Column(db.Numeric, nullable=True)
     break_time = db.Column(db.Numeric, nullable=True)
     date = db.Column(db.Date, default=datetime.utcnow)

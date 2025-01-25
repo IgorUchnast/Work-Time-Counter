@@ -82,7 +82,7 @@ def get_project_work_time_summary(project_id):
             }
 
             for task_assignment in task_assignments:
-                work_summaries = WorkSummary.query.filter_by(task_id=task_assignment.task_id).all()
+                work_summaries = WorkSummary.query.filter_by(task_id=task_assignment.assignment_id).all()
 
                 for ws in work_summaries:
                     data['task_work_time'] += float(ws.work_time) if ws.work_time else 0
@@ -95,10 +95,10 @@ def get_project_work_time_summary(project_id):
 
                     if not assignment_data:
                         assignment_data = {
-                            'task_id': task_assignment.task_id,
+                            'task_assignment_id': task_assignment.assignment_id,
                             'task_assignment': task_assignment.name,
                             'work_time': 0,
-                            'employee_id': ws.employee_id
+                            # 'employee_id': ws.employee_id
                         }
                         data['task_assignments'].append(assignment_data)
 

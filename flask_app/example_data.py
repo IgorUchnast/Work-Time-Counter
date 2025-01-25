@@ -30,3 +30,4 @@ def add_sample_work_summary():
                     db.session.add(work_summary)
     db.session.commit()
     print("Sample work summaries added successfully.")
+
