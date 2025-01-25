@@ -31,47 +31,55 @@ from datetime import date
 
 #     return jsonify({"message": "Webhook handled"}), 200
 
-@app.route('/employee/<int:employee_id>/work_summary', methods=['GET', 'POST'])
-def manage_work_station(employee_id):
-    if request.method == 'GET':
-        try:
-            # Pobierz dane stanowiska pracy dla danego pracownika
-            work_summary = WorkSummary.query.filter_by(employee_id=employee_id).first()
-            if not work_summary:
-                return jsonify({"error": "WorkStation not found"}), 404
-            
-            return jsonify({
-                "employee_id": work_summary.employee_id,
-                'date': work_summary.date,
-                'task_id': work_summary.task_id,
-                "work_time": float(work_summary.work_time) if work_summary.work_time is not None else None,
-                "break_time": float(work_summary.break_time) if work_summary.break_time is not None else None
-            }), 200
-        except Exception as e:
-            return jsonify({"error": "Database error", "details": str(e)}), 500
-    elif request.method == 'POST':
-        try:
-            # Pobierz dane z żądania
-            data = request.get_json()
-            work_time = data.get('work_time')
-            break_time = data.get('break_time')
-            task_id = data.get('task_id')
-            # Utwórz nowy rekord
-            work_station = WorkSummary(
-                employee_id=employee_id,
-                work_time=work_time,
-                break_time=break_time,
-                task_id=task_id,
-                date=date.today(),
-            )
-            db.session.add(work_station)
-            db.session.commit()
-            return jsonify({"message": "WorkStation data saved successfully"}), 200
-        except Exception as e:
-            db.session.rollback()
-            return jsonify({"error": "Database error", "details": str(e)}), 500
-        except Exception as e:
-            return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 400
+@app.route('/employee/<int:employee_id>/work_time', methods=['POST'])
+def data_aggregation(employee_id):
+    try:
+        # Pobierz dane z żądania
+        data = request.get_json()
+        work_time = data.get('work_time')
+        break_time = data.get('break_time')
+        task_id = data.get('task_id')
+        # Utwórz nowy rekord
+        work_station = WorkSummary(
+            employee_id=employee_id,
+            work_time=work_time,
+            break_time=break_time,
+            task_id=task_id,
+            date=date.today(),
+        )
+        db.session.add(work_station)
+        db.session.commit()
+        return jsonify({"message": "WorkStation data saved successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Database error", "details": str(e)}), 500
+    except Exception as e:
+        return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 400
+
+
+@app.route('/employee/<int:employee_id>/work_summary', methods=['GET'])
+def get_employee_work_summary(employee_id):
+    try:
+        # Pobierz wszystkie rekordy WorkSummary dla pracownika
+        work_summaries = WorkSummary.query.filter_by(employee_id=employee_id).all()
+        if not work_summaries:
+            return jsonify({"error": "No work summaries found for this employee"}), 404
+
+        # Przekształć wyniki w listę słowników
+        work_summary_list = [
+            {
+                "employee_id": ws.employee_id,
+                "date": ws.date.isoformat(),
+                "task_id": ws.task_id,
+                "work_time": float(ws.work_time) if ws.work_time is not None else None,
+                "break_time": float(ws.break_time) if ws.break_time is not None else None,
+            }
+            for ws in work_summaries
+        ]
+        return jsonify(work_summary_list), 200
+    except Exception as e:
+        return jsonify({"error": "Database error", "details": str(e)}), 500
+
 
 
 @app.route('/employees', methods=['GET', 'POST'])
