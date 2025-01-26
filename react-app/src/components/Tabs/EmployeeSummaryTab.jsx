@@ -67,7 +67,7 @@ const EmployeeSummaryTab = ({ employee_id }) => {
         if (!data || !Array.isArray(data) || data.length === 0) {
             return { 
                 xAxisData: [], 
-                series: [{ label: 'Brak danych', data: [] }]
+                series: []
             };
         }
     
