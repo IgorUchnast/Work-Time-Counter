@@ -91,6 +91,7 @@ const EmployeeProjectTaskAssignments = ({ employee_id, project_id }) => {
                     <div key={assignment.assignment_id}>
                         <ListGroup.Item>
                             <p><strong>{assignment.assignment_name}</strong></p>
+                            <p><strong>Id zadania: </strong>{assignment.assignment_id}</p>
                             <p><strong>Opis: </strong>{assignment.description}</p>
                             <p><strong>Data rozpoczęcia: </strong>{assignment.start_date}</p>
                         </ListGroup.Item>
