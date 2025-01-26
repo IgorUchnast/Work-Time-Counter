@@ -75,12 +75,12 @@ const EmployeeSummaryTab = ({ employee_id }) => {
     
         const series = [
             {
-                label: 'Całkowity czas pracy',
-                data: data.map(item => item.sum_work_time || 0).reverse()
-            },
-            {
                 label: 'Czas przerwy',
                 data: data.map(item => item.break_time || 0).reverse()
+            },
+            {
+                label: 'Całkowity czas pracy',
+                data: data.map(item => item.sum_work_time || 0).reverse()
             }
         ];
     
@@ -95,20 +95,24 @@ const EmployeeSummaryTab = ({ employee_id }) => {
     return (
         <div>
             <h3>Podsumowanie czasu pracy pracownika {employee_id} w danych dniach</h3>
-            <h5>Poświęcony czas nad zadaniami</h5>
-            <BarChart
-                xAxis={[{ scaleType: "band", data: xAxisData}]}
-                series={series}
-                width={1000}
-                height={300}
-            />
-            <h5>Łączny czas w trakcie dnia</h5>
-            <BarChart
-                xAxis={[{ scaleType: "band", data: xAxisDataTotal}]}
-                series={seriesTotal}
-                width={1000}
-                height={300}
-            />
+            <h5>Łączny czas pracy w trakcie dnia</h5>
+            <div>
+                <BarChart
+                    xAxis={[{ scaleType: "band", data: xAxisDataTotal}]}
+                    series={seriesTotal}
+                    width={1000}
+                    height={300}
+                />
+            </div>
+            <h5>Rozłożony czas pracy nad poszczególnymi zadaniami</h5>
+            <div>
+                <BarChart
+                    xAxis={[{ scaleType: "band", data: xAxisData}]}
+                    series={series}
+                    width={1000}
+                    height={300}
+                />
+            </div>
         </div>
     )
 }
