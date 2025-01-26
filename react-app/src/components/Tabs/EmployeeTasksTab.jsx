@@ -41,9 +41,9 @@ const EmployeeTasksTab = ({ employee_id }) => {
                         </ListGroup.Item>
                         {expandedTaskId === task.assignment_id && (
                             <div style={{ marginBottom: "10px", padding: "10px", backgroundColor: "#f8f9fa", border: "1px solid #ddd" }}>
-                                <p><strong>Id zadania: </strong>{task.task_id}</p>
-                                <p><strong>Opis: </strong>{task.description}</p>
-                                <p><strong>Data rozpoczęcia: </strong>{task.start_date}</p>
+                                <strong>Id zadania: </strong>{task.task_id}<br/>
+                                <strong>Opis: </strong>{task.description}<br/>
+                                <strong>Data rozpoczęcia: </strong>{task.start_date}<br/>
                             </div>
                         )}
                     </div>

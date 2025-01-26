@@ -73,10 +73,10 @@ const ProjectTaskAssignments = ({ task_id }) => {
                 {taskAssignments.map((assignment) => (
                     <div key={assignment.assignment_id}>
                         <ListGroup.Item>
-                            <p><strong>{assignment.assignment_name}</strong></p>
-                            <p><strong>Opis: </strong>{assignment.description}</p>
-                            <p><strong>Data rozpoczęcia: </strong>{assignment.start_date}</p>
-                            <p><strong>Przypisane dla pracownika: </strong>{assignment.employee_id}</p>
+                            <strong>{assignment.assignment_name}</strong><br/>
+                            <strong>Opis: </strong>{assignment.description}<br/>
+                            <strong>Data rozpoczęcia: </strong>{assignment.start_date}<br/>
+                            <strong>Przypisane dla pracownika: </strong>{assignment.employee_id}
                         </ListGroup.Item>
                     </div>
                 ))}
