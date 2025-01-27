@@ -1,8 +1,8 @@
 from flask import Flask, jsonify, request, abort
 from db.db_configuration import app, db
-from models.models import Employee, Project, Task, TaskAssignment, WorkSummary
+from models.models import Employee, Project, Task, TaskAssignment, WorkSummary, TaskStatus
 from trello_data.fetch_trello_data import fetch_trello_employee, fetch_trello_lists, save_trello_projects
-from datetime import date
+from datetime import date, datetime
 from example_data import add_sample_work_summary
 
 # # Endpoint obsługujący webhooki Trello
@@ -36,6 +36,7 @@ from example_data import add_sample_work_summary
 def setup_sample_data():
     add_sample_work_summary()
 
+
 @app.route('/employee/<int:employee_id>/work_time', methods=['POST'])
 def data_aggregation(employee_id):
     try:
@@ -45,14 +46,14 @@ def data_aggregation(employee_id):
         break_time = data.get('break_time')
         task_id = data.get('task_id')
         # Utwórz nowy rekord
-        work_station = WorkSummary(
+        work_summary = WorkSummary(
             employee_id=employee_id,
             work_time=work_time,
             break_time=break_time,
             task_id=task_id,
             date=date.today(),
         )
-        db.session.add(work_station)
+        db.session.add(work_summary)
         db.session.commit()
         return jsonify({"message": "WorkStation data saved successfully"}), 200
     except Exception as e:
@@ -61,6 +62,102 @@ def data_aggregation(employee_id):
     except Exception as e:
         return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 400
     
+# Wysyłanie z aplikacji (tastk_id, startn stop (domyślnie = None), gdy) 
+
+
+@app.route('/employee/<int:employee_id>/task_status', methods=['POST'])
+def send_task_status(employee_id):
+    """
+    Obsługuje żądania POST w celu zapisania czasu rozpoczęcia lub zakończenia zadania.
+    Umożliwia ponowne rozpoczęcie i zakończenie tego samego zadania.
+    """
+    try:
+        data = request.get_json()
+        task_id = data.get('task_id')
+        task_start = data.get('task_start')  # Może być True, jeśli startujemy
+        task_stop = data.get('task_stop')   # Może być True, jeśli kończymy
+
+        if not task_id:
+            return jsonify({"error": "Missing task_id"}), 400
+
+        if task_start:
+            # Dodaj nowy rekord dla rozpoczęcia zadania
+            task_status = TaskStatus(
+                task_id=task_id,
+                employee_id=employee_id,
+                task_start=datetime.now(),
+                task_stop=None  # Na razie nie ustawiamy czasu zakończenia
+            )
+            db.session.add(task_status)
+
+        elif task_stop:
+            # Znajdź ostatni rekord, który nie ma ustawionego `task_stop`
+            task_status = TaskStatus.query.filter_by(
+                task_id=task_id,
+                employee_id=employee_id,
+                task_stop=None  # Szukamy otwartego zadania
+            ).order_by(TaskStatus.task_start.desc()).first()
+
+            if not task_status:
+                return jsonify({"error": "No open task to stop"}), 400
+
+            # Zaktualizuj czas zakończenia w istniejącym rekordzie
+            task_status.task_stop = datetime.now()
+
+        else:
+            return jsonify({"error": "Invalid request, specify task_start or task_stop"}), 400
+
+        db.session.commit()
+        return jsonify({"message": "Task status updated successfully"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Database error", "details": str(e)}), 500
+
+
+@app.route('/employee/<int:employee_id>/task_status', methods=['GET'])
+def get_task_status(employee_id):
+    """
+    Obsługuje żądania GET w celu sprawdzenia statusu zadań pracownika.
+    Zwraca:
+    - Zadania w trakcie realizacji (task_start bez task_stop)
+    - Zadania zakończone (task_start i task_stop ustawione)
+    """
+    try:
+        # Pobierz wszystkie zadania dla danego pracownika
+        tasks = TaskStatus.query.filter_by(employee_id=employee_id).all()
+
+        if not tasks:
+            return jsonify({"message": "No tasks found for this employee"}), 404
+
+        response_data = []
+
+        for task in tasks:
+            if task.task_start and not task.task_stop:
+                # Zadanie w trakcie realizacji
+                response_data.append({
+                    "task_id": task.task_id,
+                    "employee_id": task.employee_id,
+                    "task_start": True,
+                    "task_stop": False,
+                    "status": "Task in progress"
+                })
+            elif task.task_start and task.task_stop:
+                # Zadanie zakończone
+                response_data.append({
+                    "task_id": task.task_id,
+                    "employee_id": task.employee_id,
+                    "task_start": task.task_start.strftime('%Y-%m-%d %H:%M:%S'),
+                    "task_stop": task.task_stop.strftime('%Y-%m-%d %H:%M:%S'),
+                    "status": "Task completed"
+                })
+
+        return jsonify(response_data), 200
+
+    except Exception as e:
+        return jsonify({"error": "Database error", "details": str(e)}), 500
+
+
 #task -> [czas pracy nad taskiem, task_id, task_name, tablica subtask [id, nazwa,czas]]
 @app.route('/project/<int:project_id>/work_summary', methods=['GET'])
 def get_project_work_time_summary(project_id):
