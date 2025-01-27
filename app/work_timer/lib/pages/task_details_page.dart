@@ -5,9 +5,12 @@ import 'package:http/http.dart' as http;
 
 class TaskDetailsPage extends StatefulWidget {
   final Map task;
-
-  const TaskDetailsPage({super.key, required this.task});
-
+  final int employeeId;
+  const TaskDetailsPage({
+    super.key,
+    required this.task,
+    required this.employeeId,
+  });
   @override
   // ignore: library_private_types_in_public_api
   _TaskDetailsPageState createState() => _TaskDetailsPageState();
@@ -27,10 +30,10 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
     });
 
     await http.post(
-      Uri.parse('http://127.0.0.1:5000/employee/1/task_status'),
+      Uri.parse('http://127.0.0.1:5000/task_status'),
       headers: {'Content-Type': 'application/json'},
-      body:
-          json.encode({'task_id': widget.task['task_id'], 'task_start': true}),
+      body: json.encode(
+          {'assignment_id': widget.task['assignment_id'], 'start_date': true}),
     );
 
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -45,7 +48,8 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
 
     // Wysyłanie POST do data_aggregation
     await http.post(
-      Uri.parse('http://127.0.0.1:5000/employee/1/work_time'),
+      Uri.parse(
+          'http://127.0.0.1:5000/employee/${widget.employeeId}/work_time'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
         'task_id': widget.task['task_id'],
@@ -56,11 +60,11 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
 
     // Wysyłanie POST do task_status
     await http.post(
-      Uri.parse('http://127.0.0.1:5000/employee/1/task_status'),
+      Uri.parse('http://127.0.0.1:5000/task_status'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
-        'task_id': widget.task['task_id'],
-        'task_stop': true, // Informacja o zakończeniu zadania
+        'assignment_id': widget.task['assignment_id'],
+        'stop_date': true, // Informacja o zakończeniu zadania
       }),
     );
 

@@ -48,8 +48,8 @@ def data_aggregation(employee_id):
         # Utwórz nowy rekord
         work_summary = WorkSummary(
             employee_id=employee_id,
-            work_time=work_time,
-            break_time=break_time,
+            work_time=work_time/3600,
+            break_time=break_time/3600,
             task_id=task_id,
             date=date.today(),
         )

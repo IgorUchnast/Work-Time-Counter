@@ -87,7 +87,7 @@ def save_trello_cards(list_id):
                                     task_id=task.task_id,
                                     name=card['name'],
                                     employee_id= employee.employee_id,
-                                    start_date=date.today(),
+                                    # start_date=date.today(),
                                     trello_id=card["id"],
                                     description=card["desc"],
                                 )
@@ -98,7 +98,7 @@ def save_trello_cards(list_id):
                         task_id=task.task_id,
                         name=card['name'],
                         employee_id= None,
-                        start_date=date.today(),
+                        # start_date=date.today(),
                         trello_id=card["id"],
                         description=card["desc"],
                     )
