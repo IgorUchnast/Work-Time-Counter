@@ -77,8 +77,8 @@ const ProjectTaskAssignments = ({ task_id }) => {
                             <strong>Id zadania: </strong>{assignment.assignment_id}<br/>
                             <strong>Przypisane dla pracownika: </strong>{assignment.employee_id}<br/>
                             <strong>Opis: </strong>{assignment.description}<br/>
-                            <strong>Data rozpoczęcia: </strong>{assignment.start_date ? (assignment.start_date) : ("brak")}<br/>
-                            <strong>Data zakończenia: </strong>{assignment.stop_date ? (assignment.stop_date) : ("brak")}
+                            <strong>Data ostatniego rozpoczęcia: </strong>{assignment.start_date ? (assignment.start_date) : ("brak")}<br/>
+                            <strong>Data ostatniego zakończenia: </strong>{assignment.stop_date ? (assignment.stop_date) : ("brak")}
                         </ListGroup.Item>
                     </div>
                 ))}
