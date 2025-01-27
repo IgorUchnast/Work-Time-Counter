@@ -87,12 +87,12 @@ def send_task_status():
                 # Zaktualizuj czas rozpoczęcia zadania
                 assignment.start_date = datetime.now()
                 assignment.stop_date = None
-                assignment.status = "W trakcie"
+                assignment.status = "Aktywne"
 
             elif stop_date:
                 # Zaktualizuj czas zakończenia w istniejącym rekordzie
                 assignment.stop_date = datetime.now()
-                assignment.status = "Zakończono"
+                assignment.status = "Nieaktywne"
 
             else:
                 return jsonify({"error": "Invalid request, specify task_start or task_stop"}), 400

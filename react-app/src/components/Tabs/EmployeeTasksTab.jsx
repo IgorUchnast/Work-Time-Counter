@@ -43,8 +43,8 @@ const EmployeeTasksTab = ({ employee_id }) => {
                             <div style={{ marginBottom: "10px", padding: "10px", backgroundColor: "#f8f9fa", border: "1px solid #ddd" }}>
                                 <strong>Id zadania: </strong>{task.task_id}<br/>
                                 <strong>Opis: </strong>{task.description}<br/>
-                                <strong>Data rozpoczęcia: </strong>{task.start_date ? (task.start_date) : ("brak")}<br/>
-                                <strong>Data zakończenia: </strong>{task.stop_date ? (task.stop_date) : ("brak")}
+                                <strong>Data ostatniego rozpoczęcia: </strong>{task.start_date ? (task.start_date) : ("brak")}<br/>
+                                <strong>Data ostatniego zakończenia: </strong>{task.stop_date ? (task.stop_date) : ("brak")}
                             </div>
                         )}
                     </div>

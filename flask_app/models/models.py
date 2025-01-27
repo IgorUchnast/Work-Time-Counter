@@ -72,7 +72,7 @@ class TaskAssignment(db.Model):
     # hours_spent = db.Column(db.Numeric, nullable=True)
     start_date = db.Column(db.DateTime, nullable=True, default=None)
     stop_date = db.Column(db.DateTime, nullable=True, default=None)
-    status = db.Column(db.Text, nullable=False, default="Nie zaczęto")
+    status = db.Column(db.Text, nullable=False, default="Nieaktywne")
 
 
 class Meeting(db.Model):
