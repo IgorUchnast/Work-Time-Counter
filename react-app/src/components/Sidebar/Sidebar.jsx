@@ -49,7 +49,7 @@ const Sidebar = () => {
                     cursor: "pointer" // Zmienia kursor na wskaźnik
                 }}
             >
-                <h4 className="mb-3">WorkChrono</h4>
+                <h4 className="mb-3">WorkTime Counter</h4>
             </Link>
 
             {/* Sekcja Pracownicy */}
