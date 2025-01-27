@@ -5,11 +5,12 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import ProjectsTab from './Tabs/ProjectsTab'
 import EmployeesTab from './Tabs/EmployeesTab'
-import MeetingsTab from './Tabs/MeetingsTab'
 import { useParams } from 'react-router-dom'
 import Sidebar from './Sidebar/Sidebar'
-import EmployeesTasksTab from './Tabs/EmployeeTasksTab'
+import EmployeeTasksTab from './Tabs/EmployeeTasksTab'
 import ProjectTasksTab from './Tabs/ProjectTasksTab'
+import EmployeeSummaryTab from './Tabs/EmployeeSummaryTab'
+import ProjectSummaryTab from './Tabs/ProjectSummaryTab'
 
 const Dashboard = ({ type }) => {
     let params = useParams()
@@ -27,37 +28,37 @@ const Dashboard = ({ type }) => {
                     {type !== null && (type === "employees" ? (
                         <Tabs
                             id={type}
-                            defaultActiveKey="projects"
+                            defaultActiveKey="summary"
                             variant='underline'
                             className="mb-3"
                             justify
                         >
+                            <Tab eventKey="summary" title="Podsumowanie">
+                                <EmployeeSummaryTab employee_id={params.employee_id}/>
+                            </Tab>
                             <Tab eventKey="projects" title="Projekty">
                                 <ProjectsTab employee_id={params.employee_id}/>
                             </Tab>
                             <Tab eventKey="tasks" title="Zadania">
-                                <EmployeesTasksTab employee_id={params.employee_id}/>
-                            </Tab>
-                            <Tab eventKey="meetings" title="Spotkania">
-                                <MeetingsTab employee_id={params.employee_id}/>
+                                <EmployeeTasksTab employee_id={params.employee_id}/>
                             </Tab>
                         </Tabs>
                         ) : (
                         <Tabs
                             id={type}
-                            defaultActiveKey="employees"
+                            defaultActiveKey="summary"
                             variant='underline'
                             className="mb-3"
                             justify
                         >
+                            <Tab eventKey="summary" title="Podsumowanie">
+                                <ProjectSummaryTab project_id={params.project_id}/>
+                            </Tab>
                             <Tab eventKey="employees" title="Pracownicy">
                                 <EmployeesTab project_id={params.project_id}/>
                             </Tab>
-                                <Tab eventKey="tasks" title="Zadania">
+                            <Tab eventKey="tasks" title="Zadania">
                                 <ProjectTasksTab project_id={params.project_id}/>
-                            </Tab>
-                            <Tab eventKey="meetings" title="Spotkania">
-                                <MeetingsTab project_id={params.project_id}/>
                             </Tab>
                         </Tabs>
                     ))}

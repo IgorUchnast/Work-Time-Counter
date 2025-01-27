@@ -70,7 +70,9 @@ class TaskAssignment(db.Model):
     name = db.Column(db.Text, nullable=True)
     # **********
     # hours_spent = db.Column(db.Numeric, nullable=True)
-    start_date = db.Column(db.Date, nullable=False)
+    start_date = db.Column(db.DateTime, nullable=True, default=None)
+    stop_date = db.Column(db.DateTime, nullable=True, default=None)
+    status = db.Column(db.Text, nullable=False, default="Nie zaczęto")
 
 
 class Meeting(db.Model):
@@ -101,17 +103,3 @@ class WorkSummary(db.Model):
     # task_start = db.Column(db.DateTime, default=datetime.now, nullable=True)
     # task_stop = db.Column(db.DateTime, default=datetime.now, nullable=True)
     date = db.Column(db.Date, default=datetime.utcnow)
-
-class TaskStatus(db.Model):
-    __tablename__ = 'task_status'
-    task_status_id = db.Column(db.Integer, primary_key=True)
-    task_id = db.Column(db.Integer, db.ForeignKey('task_assignment.assignment_id'), nullable=False)
-    employee_id = db.Column(db.Integer, db.ForeignKey('employee.employee_id'))
-    task_start = db.Column(db.DateTime, nullable=True)
-    task_stop = db.Column(db.DateTime, nullable=True)
-
-    def __init__(self, task_id, employee_id, task_start=None, task_stop=None):
-        self.task_id = task_id
-        self.employee_id = employee_id
-        self.task_start = task_start
-        self.task_stop = task_stop

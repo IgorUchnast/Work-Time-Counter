@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { getEmployeeTasks } from "../../api"
 import ListGroup from "react-bootstrap/ListGroup"
 
-const EmployeesTasksTab = ({ employee_id }) => {
+const EmployeeTasksTab = ({ employee_id }) => {
     const [tasks, setTasks] = useState([])
     const [expandedTaskId, setExpandedTaskId] = useState(null)
 
@@ -21,7 +21,7 @@ const EmployeesTasksTab = ({ employee_id }) => {
             })
     }, [employee_id])
 
-    if(!tasks.length) return <div>Ładowanie zadań...</div>
+    if(!tasks.length) return <div>Brak zadań</div>
 
     return (
         <div>
@@ -37,13 +37,14 @@ const EmployeesTasksTab = ({ employee_id }) => {
                                 border: "1px solid #ddd"
                             }}
                         >
-                            <strong>{task.name}</strong>
+                            <strong>{task.name}</strong> <i>({task.status})</i>
                         </ListGroup.Item>
                         {expandedTaskId === task.assignment_id && (
                             <div style={{ marginBottom: "10px", padding: "10px", backgroundColor: "#f8f9fa", border: "1px solid #ddd" }}>
-                                <p><strong>Id zadania: </strong>{task.task_id}</p>
-                                <p><strong>Opis: </strong>{task.description}</p>
-                                <p><strong>Data rozpoczęcia: </strong>{task.start_date}</p>
+                                <strong>Id zadania: </strong>{task.task_id}<br/>
+                                <strong>Opis: </strong>{task.description}<br/>
+                                <strong>Data rozpoczęcia: </strong>{task.start_date ? (task.start_date) : ("brak")}<br/>
+                                <strong>Data zakończenia: </strong>{task.stop_date ? (task.stop_date) : ("brak")}
                             </div>
                         )}
                     </div>
@@ -53,4 +54,4 @@ const EmployeesTasksTab = ({ employee_id }) => {
     )
 }
 
-export default EmployeesTasksTab
+export default EmployeeTasksTab
