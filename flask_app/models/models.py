@@ -15,7 +15,7 @@ class Employee(db.Model):
     project_memberships = db.relationship('ProjectMember', backref='employee', lazy=True)
     task_assignments = db.relationship('TaskAssignment', backref='employee', lazy=True)
     meeting_attendances = db.relationship('MeetingAttendance', backref='employee', lazy=True)
-    work_summary = db.relationship('WorkSummary', backref='employee', uselist=False)
+    work_summary = db.relationship('WorkSummary', backref='employee', lazy=True)
 
 
 class ProjectMember(db.Model):
@@ -70,7 +70,9 @@ class TaskAssignment(db.Model):
     name = db.Column(db.Text, nullable=True)
     # **********
     # hours_spent = db.Column(db.Numeric, nullable=True)
-    start_date = db.Column(db.Date, nullable=False)
+    start_date = db.Column(db.DateTime, nullable=True, default=None)
+    stop_date = db.Column(db.DateTime, nullable=True, default=None)
+    status = db.Column(db.Text, nullable=False, default="Nie zaczęto")
 
 
 class Meeting(db.Model):
@@ -93,9 +95,11 @@ class MeetingAttendance(db.Model):
 
 class WorkSummary(db.Model):
     __tablename__ = 'work_summary'
-    workstation_id = db.Column(db.Integer, primary_key=True)
+    worksummary_id = db.Column(db.Integer, primary_key=True)
     employee_id = db.Column(db.Integer, db.ForeignKey('employee.employee_id'))
-    task_id = db.Column(db.Integer, db.ForeignKey('task.task_id'), nullable=False)
+    task_id = db.Column(db.Integer, db.ForeignKey('task_assignment.assignment_id'), nullable=False)
     work_time = db.Column(db.Numeric, nullable=True)
     break_time = db.Column(db.Numeric, nullable=True)
+    # task_start = db.Column(db.DateTime, default=datetime.now, nullable=True)
+    # task_stop = db.Column(db.DateTime, default=datetime.now, nullable=True)
     date = db.Column(db.Date, default=datetime.utcnow)

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { getEmployeeProjects, getEmployeeProjectTaskAssignments } from "../../api"
 import ListGroup from "react-bootstrap/ListGroup"
 import { Link } from "react-router-dom";
@@ -29,7 +29,7 @@ const ProjectsTab = ({ employee_id }) => {
             <h3>Projekty pracownika {employee_id}</h3>
             <ListGroup numbered>
                 {projects.map((project) => (
-                    <div key={project.project_id}>
+                    <React.Fragment key={project.project_id}>
                         <ListGroup.Item
                             onClick={() => toggleProjectTasks(project.project_id)}
                             style={{
@@ -60,14 +60,14 @@ const ProjectsTab = ({ employee_id }) => {
                                 />
                             </div>
                         )}
-                    </div>
+                    </React.Fragment>
                 ))}
             </ListGroup>
         </div>
     )
 }
 
-const EmployeeProjectTaskAssignments = ({ employee_id, project_id }) => {
+export const EmployeeProjectTaskAssignments = ({ employee_id, project_id }) => {
     const [projectTaskAssignments, setProjectTaskAssignments] = useState([])
     
 
@@ -90,9 +90,11 @@ const EmployeeProjectTaskAssignments = ({ employee_id, project_id }) => {
                 {projectTaskAssignments.map((assignment) => (
                     <div key={assignment.assignment_id}>
                         <ListGroup.Item>
-                            <p><strong>{assignment.assignment_name}</strong></p>
-                            <p><strong>Opis: </strong>{assignment.description}</p>
-                            <p><strong>Data rozpoczęcia: </strong>{assignment.start_date}</p>
+                            <strong>{assignment.assignment_name}</strong> <i>({assignment.status})</i><br/>
+                            <strong>Id zadania: </strong>{assignment.assignment_id}<br/>
+                            <strong>Opis: </strong>{assignment.description}<br/>
+                            <strong>Data rozpoczęcia: </strong>{assignment.start_date ? (assignment.start_date) : ("brak")}<br/>
+                            <strong>Data zakończenia: </strong>{assignment.stop_date ? (assignment.stop_date) : ("brak")}
                         </ListGroup.Item>
                     </div>
                 ))}
