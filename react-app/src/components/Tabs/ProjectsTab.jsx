@@ -90,10 +90,11 @@ export const EmployeeProjectTaskAssignments = ({ employee_id, project_id }) => {
                 {projectTaskAssignments.map((assignment) => (
                     <div key={assignment.assignment_id}>
                         <ListGroup.Item>
-                            <strong>{assignment.assignment_name}</strong><br/>
+                            <strong>{assignment.assignment_name}</strong> <i>({assignment.status})</i><br/>
                             <strong>Id zadania: </strong>{assignment.assignment_id}<br/>
                             <strong>Opis: </strong>{assignment.description}<br/>
-                            <strong>Data rozpoczęcia: </strong>{assignment.start_date}
+                            <strong>Data rozpoczęcia: </strong>{assignment.start_date ? (assignment.start_date) : ("brak")}<br/>
+                            <strong>Data zakończenia: </strong>{assignment.stop_date ? (assignment.stop_date) : ("brak")}
                         </ListGroup.Item>
                     </div>
                 ))}

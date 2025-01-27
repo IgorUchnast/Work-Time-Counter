@@ -380,7 +380,7 @@ def get_project_task_assignments(task_id):
                     'employee_id': task_assignment.employee_id,
                     'assignment_name': task_assignment.name,
                     'description': task_assignment.description,
-                    'start_date': task_assignment.start_date,~
+                    'start_date': task_assignment.start_date,
                     'stop_date': task_assignment.stop_date,
                     'status': task_assignment.status
                 })
